@@ -1,15 +1,18 @@
+server:
+  port: 8080
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/guide-me-home
-    username: postgres
-    password: password
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  application:
+    name: guidemehome
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+    
+com:
+  guidemehome:
+    firebase:
+      serviceAccountFilePath: serviceAccount.json
+    open-api:
+      enabled: true
+      api-version: 1.0.0
+      title: Guide-Me-Home
+      description: Backend application for Guide-Me-Home
