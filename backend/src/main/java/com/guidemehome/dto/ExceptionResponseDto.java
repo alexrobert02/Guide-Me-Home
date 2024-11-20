@@ -10,7 +10,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @Schema(title = "Error", accessMode = Schema.AccessMode.READ_ONLY)
-@JsonNaming(value = PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class ExceptionResponseDto<T> {
 
 	private String status;
