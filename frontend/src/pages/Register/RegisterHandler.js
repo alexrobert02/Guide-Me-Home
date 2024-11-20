@@ -1,29 +1,44 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import RegisterForm from "./RegisterForm";
+import axios from "axios";
 
 function RegisterHandler() {
   const navigate = useNavigate();
 
   const handleRegister = async (credentials) => {
     try {
-      const response = await fetch("http://localhost:8080/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credentials),
-      });
+      console.log(credentials);
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/user",
+        credentials,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
+        // Adjust status code checks as needed
         alert("Registration successful!");
-        navigate("/login"); 
+        navigate("/login");
       } else {
         alert("Failed to register. Please try again.");
       }
     } catch (error) {
       console.error("Error registering:", error);
-      alert("An error occurred. Please try again later.");
+      if (error.response) {
+        // Error response from server
+        alert(
+          `Failed to register: ${
+            error.response.data.message || "Please try again."
+          }`
+        );
+      } else {
+        // Network or other errors
+        alert("An error occurred. Please try again later.");
+      }
     }
   };
 

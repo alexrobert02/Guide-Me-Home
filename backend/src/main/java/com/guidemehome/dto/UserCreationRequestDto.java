@@ -13,14 +13,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@JsonNaming(value = PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Schema(title = "UserCreationRequest", accessMode = Schema.AccessMode.WRITE_ONLY)
 public class UserCreationRequestDto {
 
-	@NotBlank(message = "EmailId must not be empty")
-	@Email(message = "EmailId must be of valid format")
-	@Schema(requiredMode = RequiredMode.REQUIRED, description = "email-id of user", example = "hardik.behl7444@gmail.com")
-	private String emailId;
+	@NotBlank(message = "Email must not be empty")
+	@Email(message = "Email must be of valid format")
+	@Schema(requiredMode = RequiredMode.REQUIRED, description = "email of user", example = "hardik.behl7444@gmail.com")
+	private String email;
 	
 	@NotBlank(message = "Password must not be empty")
 	@Size(min = 6, message = "Password length must be 6 characters long")

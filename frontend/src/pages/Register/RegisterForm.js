@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./RegisterForm.css"; 
 import { useNavigate } from "react-router-dom";
 
 function RegisterForm({ onRegister }) {
@@ -18,12 +17,13 @@ function RegisterForm({ onRegister }) {
       return;
     }
     onRegister({ email, password, role });
+    // onRegister({ email, password });
   };
 
   return (
-    <div className="register-container">
-      <h2 className="register-title">Register</h2>
-      <form onSubmit={handleSubmit} className="register-form">
+    <div className="auth-container">
+      <h2 className="title">Register</h2>
+      <form onSubmit={handleSubmit} className="form">
         <div className="form-group">
           <label>Email:</label>
           <input
@@ -86,7 +86,7 @@ function RegisterForm({ onRegister }) {
             </label>
           </div>
         </div>
-        <button type="submit" className="register-button">
+        <button type="submit" className="submit-button">
           Register
         </button>
       </form>

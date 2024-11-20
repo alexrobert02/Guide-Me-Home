@@ -11,7 +11,6 @@ import lombok.extern.jackson.Jacksonized;
 @Getter
 @Builder
 @Jacksonized
-@JsonNaming(value = PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Schema(title = "TokenSuccessResponse", accessMode = Schema.AccessMode.READ_ONLY)
 public class TokenSuccessResponseDto {
 

@@ -15,7 +15,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@JsonNaming(value = PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Schema(title = "TaskCreationRequest", accessMode = Schema.AccessMode.WRITE_ONLY)
 public class TaskCreationRequestDto {
 

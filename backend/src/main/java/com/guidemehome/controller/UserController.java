@@ -38,7 +38,7 @@ public class UserController {
 	@ApiResponses(value = { 
 			@ApiResponse(responseCode = "201", description = "User record created successfully",
 					content = @Content(schema = @Schema(implementation = Void.class))),
-			@ApiResponse(responseCode = "409", description = "User account with provided email-id already exists",
+			@ApiResponse(responseCode = "409", description = "User account with provided email already exists",
 					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))),
 			@ApiResponse(responseCode = "400", description = "Invalid request body",
 					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))) })
