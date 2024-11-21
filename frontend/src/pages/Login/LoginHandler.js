@@ -21,7 +21,7 @@ function LoginHandler() {
       if (response.status === 200) {
         const data = response.data;
         localStorage.setItem("isAuthenticated", true);
-        localStorage.setItem("role", credentials.role);
+        localStorage.setItem("role", data.role);
         localStorage.setItem("token", data.accessToken);
         navigate("/");
       } else {

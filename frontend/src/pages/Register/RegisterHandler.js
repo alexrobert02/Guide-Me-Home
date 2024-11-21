@@ -7,8 +7,8 @@ function RegisterHandler() {
   const navigate = useNavigate();
 
   const handleRegister = async (credentials) => {
+    console.log(credentials);
     try {
-      console.log(credentials);
       const response = await axios.post(
         "http://localhost:8080/api/v1/user",
         credentials,

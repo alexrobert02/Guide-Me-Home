@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,5 +26,10 @@ public class UserCreationRequestDto {
 	@Size(min = 6, message = "Password length must be 6 characters long")
 	@Schema(requiredMode = RequiredMode.REQUIRED, description = "secure password to enable user login", example = "somethingSecure")
 	private String password;
+
+	@NotBlank(message = "Role must not be empty")
+	@Pattern(regexp = "^(user|assistant)$", message = "Role must be either 'user' or 'assistant'")
+	@Schema(requiredMode = RequiredMode.REQUIRED, description = "the role of the user", example = "user")
+	private String role;
 
 }

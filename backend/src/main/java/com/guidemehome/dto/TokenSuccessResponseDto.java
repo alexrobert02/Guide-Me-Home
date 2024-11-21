@@ -15,5 +15,6 @@ import lombok.extern.jackson.Jacksonized;
 public class TokenSuccessResponseDto {
 
 	private String accessToken;
+	private String role;
 
 }

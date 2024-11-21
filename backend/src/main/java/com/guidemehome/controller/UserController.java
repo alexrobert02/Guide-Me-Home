@@ -1,5 +1,6 @@
 package com.guidemehome.controller;
 
+import com.google.firebase.auth.FirebaseAuthException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +58,7 @@ public class UserController {
 			@ApiResponse(responseCode = "400", description = "Invalid request body",
 					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))) })
 	public ResponseEntity<TokenSuccessResponseDto> login(
-			@Valid @RequestBody final UserLoginRequestDto userLoginRequest) {
+			@Valid @RequestBody final UserLoginRequestDto userLoginRequest) throws FirebaseAuthException {
 		final var response = userService.login(userLoginRequest);
 		return ResponseEntity.ok(response);
 	}
