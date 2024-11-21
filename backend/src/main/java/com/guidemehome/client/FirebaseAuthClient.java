@@ -1,5 +1,8 @@
 package com.guidemehome.client;
 
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.UserRecord;
 import com.guidemehome.dto.TokenSuccessResponseDto;
 import com.guidemehome.exception.InvalidLoginCredentialsException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -12,6 +15,9 @@ import com.guidemehome.configuration.FirebaseConfigurationProperties;
 import com.guidemehome.dto.FirebaseSignInRequestDto;
 import com.guidemehome.dto.FirebaseSignInResponseDto;
 import com.guidemehome.dto.UserLoginRequestDto;
+import com.google.cloud.firestore.Firestore;
+import com.google.firebase.auth.FirebaseAuth;
+
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -22,20 +28,51 @@ import lombok.RequiredArgsConstructor;
 @EnableConfigurationProperties(FirebaseConfigurationProperties.class)
 public class FirebaseAuthClient {
 
+	private final Firestore firestore;
+	private final FirebaseAuth firebaseAuth;
 	private final FirebaseConfigurationProperties firebaseConfigurationProperties;
 
 	private static final String BASE_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword";
 	private static final String API_KEY_PARAM = "key";
 	private static final String INVALID_CREDENTIALS_ERROR = "INVALID_LOGIN_CREDENTIALS";
 
-	public TokenSuccessResponseDto login(@NonNull final UserLoginRequestDto userLoginRequest) {
+	public TokenSuccessResponseDto login(@NonNull final UserLoginRequestDto userLoginRequest) throws FirebaseAuthException {
 		final var requestBody = prepareRequestBody(userLoginRequest);
 		final var response = sendSignInRequest(requestBody);
+
+		// Obține UUID-ul utilizatorului din Firebase Authentication
+		UserRecord userRecord = firebaseAuth.getUserByEmail(userLoginRequest.getEmail());
+		String uuid = userRecord.getUid();
+
+		// Preluare rol folosind UUID
+		String role = fetchUserRole(uuid);
+
 		return TokenSuccessResponseDto.builder()
 				.accessToken(response.getIdToken())
+				.role(role) // Include rolul în răspuns
 				.build();
 	}
-	
+
+
+
+	private String fetchUserRole(String uuid) {
+		try {
+			DocumentSnapshot documentSnapshot = firestore.collection("users").document(uuid).get().get();
+			if (documentSnapshot.exists() && documentSnapshot.contains("role")) {
+				return documentSnapshot.getString("role");
+			} else {
+				System.out.println("No valid document or role field found for uuid: " + uuid);
+				throw new RuntimeException("No user found for the provided uuid.");
+			}
+		} catch (Exception e) {
+			System.out.println("Exception while fetching user role: " + e.getMessage());
+			throw new RuntimeException("Failed to fetch user role", e);
+		}
+	}
+
+
+
+
 	private FirebaseSignInResponseDto sendSignInRequest(@NonNull final FirebaseSignInRequestDto request) {
 		final var webApiKey = firebaseConfigurationProperties.getFirebase().getWebApiKey();
 		final FirebaseSignInResponseDto response;
