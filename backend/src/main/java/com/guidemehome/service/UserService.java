@@ -37,7 +37,6 @@ public class UserService {
 
 		try {
 			UserRecord userRecord = firebaseAuth.createUser(request);
-			// Salvarea profilului utilizatorului în Firestore
 			Map<String, Object> userProfile = new HashMap<>();
 			userProfile.put("email", userCreationRequest.getEmail());
 			userProfile.put("role", userCreationRequest.getRole());
