@@ -40,16 +40,14 @@ public class FirebaseAuthClient {
 		final var requestBody = prepareRequestBody(userLoginRequest);
 		final var response = sendSignInRequest(requestBody);
 
-		// Obține UUID-ul utilizatorului din Firebase Authentication
 		UserRecord userRecord = firebaseAuth.getUserByEmail(userLoginRequest.getEmail());
 		String uuid = userRecord.getUid();
 
-		// Preluare rol folosind UUID
 		String role = fetchUserRole(uuid);
 
 		return TokenSuccessResponseDto.builder()
 				.accessToken(response.getIdToken())
-				.role(role) // Include rolul în răspuns
+				.role(role)
 				.build();
 	}
 
