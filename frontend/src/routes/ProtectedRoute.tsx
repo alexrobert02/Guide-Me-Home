@@ -1,10 +1,15 @@
-import React from "react";
+
+import * as React from "react";
+
 import { Navigate, Outlet } from "react-router-dom";
 
-const ProtectedRoute = () => {
-  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+interface ProtectedRouteProps {
+  isAuth: boolean;
+}
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ isAuth }) => {
+
+  return isAuth ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;

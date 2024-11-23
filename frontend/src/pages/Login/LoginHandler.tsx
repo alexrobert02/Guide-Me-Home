@@ -1,7 +1,10 @@
-import React from "react";
+import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import LoginForm from "./LoginForm";
 import axios from "axios";
+
+const TRUE_STRING = "true";
+
 
 function LoginHandler() {
   const navigate = useNavigate();
@@ -20,7 +23,7 @@ function LoginHandler() {
 
       if (response.status === 200) {
         const data = response.data;
-        localStorage.setItem("isAuthenticated", true);
+        localStorage.setItem("isAuthenticated", TRUE_STRING);
         localStorage.setItem("role", data.role);
         localStorage.setItem("token", data.accessToken);
         navigate("/");
