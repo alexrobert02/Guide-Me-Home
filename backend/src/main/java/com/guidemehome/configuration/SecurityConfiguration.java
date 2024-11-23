@@ -74,7 +74,7 @@ public class SecurityConfiguration {
 	
 	private CorsConfigurationSource corsConfigurationSource() {
 		final var corsConfiguration = new CorsConfiguration();
-		corsConfiguration.setAllowedOrigins(List.of("*"));
+		corsConfiguration.setAllowedOrigins(List.of("*", "https://localhost", "http://localhost"));
 		corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		corsConfiguration.setAllowedHeaders(List.of("Authorization", "Origin", "Content-Type", "Accept"));
 
