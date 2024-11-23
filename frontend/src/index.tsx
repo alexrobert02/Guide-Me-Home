@@ -5,6 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 
+// @ts-ignore - [alin090402] createRoot is not typed yet as it is experimental
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

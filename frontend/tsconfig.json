@@ -1,8 +1,10 @@
 {
     "compilerOptions": {
+      "jsx": "react",
       "outDir": "./dist",
       "allowJs": true,
-      "target": "ESNext"
+      "target": "ESNext",
+      "moduleResolution": "node",
     },
     "include": ["./src/**/*.tsx"]
   }
