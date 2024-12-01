@@ -14,7 +14,6 @@ import lombok.extern.jackson.Jacksonized;
 @Getter
 @Builder
 @Jacksonized
-@Schema(title = "TaskResponse", accessMode = Schema.AccessMode.READ_ONLY)
 public class TaskResponseDto {
 
 	private String id;

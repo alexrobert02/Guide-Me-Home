@@ -15,7 +15,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Schema(title = "TaskCreationRequest", accessMode = Schema.AccessMode.WRITE_ONLY)
 public class TaskCreationRequestDto {
 
 	@NotBlank(message = "Title must not be empty")

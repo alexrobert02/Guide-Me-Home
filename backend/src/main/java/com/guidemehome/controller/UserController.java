@@ -28,35 +28,19 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user")
-@Tag(name = "User Management", description = "Endpoints for user account and authentication management")
 public class UserController {
 
 	private final UserService userService;
 
 	@PublicEndpoint
-	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(summary = "Creates a user record", description = "Creates a unique user record in the system corresponding to the provided information")
-	@ApiResponses(value = { 
-			@ApiResponse(responseCode = "201", description = "User record created successfully",
-					content = @Content(schema = @Schema(implementation = Void.class))),
-			@ApiResponse(responseCode = "409", description = "User account with provided email already exists",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))),
-			@ApiResponse(responseCode = "400", description = "Invalid request body",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))) })
-	public ResponseEntity<HttpStatus> createUser(@Valid @RequestBody final UserCreationRequestDto userCreationRequest) {
+	@PostMapping
+	public ResponseEntity<Void> createUser(@Valid @RequestBody final UserCreationRequestDto userCreationRequest) {
 		userService.create(userCreationRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@PublicEndpoint
-	@PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(summary = "Validates user login credentials", description = "Validates user login credentials and returns access-token on successful authentication")
-	@ApiResponses(value = { 
-			@ApiResponse(responseCode = "200", description = "Authentication successfull"),
-			@ApiResponse(responseCode = "401", description = "Invalid credentials provided. Failed to authenticate user",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))),
-			@ApiResponse(responseCode = "400", description = "Invalid request body",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))) })
+	@PostMapping(value = "/login")
 	public ResponseEntity<TokenSuccessResponseDto> login(
 			@Valid @RequestBody final UserLoginRequestDto userLoginRequest) throws FirebaseAuthException {
 		final var response = userService.login(userLoginRequest);

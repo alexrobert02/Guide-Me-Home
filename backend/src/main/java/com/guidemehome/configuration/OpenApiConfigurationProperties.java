@@ -14,7 +14,7 @@ public class OpenApiConfigurationProperties {
 
 	@Getter
 	@Setter
-	public class OpenAPI {
+	public static class OpenAPI {
 
 		private boolean enabled;
 
