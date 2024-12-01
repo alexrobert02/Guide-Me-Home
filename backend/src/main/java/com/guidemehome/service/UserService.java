@@ -1,7 +1,7 @@
 package com.guidemehome.service;
 
 import com.google.firebase.auth.UserRecord;
-import com.guidemehome.exception.AccountAlreadyExistsException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.guidemehome.client.FirebaseAuthClient;
@@ -16,6 +16,7 @@ import com.google.cloud.firestore.Firestore;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class UserService {
 			firestore.collection("users").document(userRecord.getUid()).set(userProfile);
 		} catch (final FirebaseAuthException exception) {
 			if (exception.getMessage().contains("EMAIL_EXISTS")) {
-				throw new AccountAlreadyExistsException("Account with provided email-id already exists");
+				throw new ResponseStatusException(HttpStatus.CONFLICT, "Account with provided email-id already exists");
 			}
 			throw exception;
 		}

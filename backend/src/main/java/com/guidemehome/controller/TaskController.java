@@ -32,63 +32,30 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/tasks")
-@Tag(name = "Task Management", description = "Endpoints for managing tasks.")
 public class TaskController {
 
 	private final TaskService taskService;
 
-	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(summary = "Creates a new task record", description = "Creates a new task with provided details")
-	@ApiResponses(value = { 
-			@ApiResponse(responseCode = "200", description = "Task created successfully",
-					content = @Content(schema = @Schema(implementation = Void.class))),
-			@ApiResponse(responseCode = "401", description = "Authentication failure: Invalid access token",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))),
-			@ApiResponse(responseCode = "400", description = "Invalid request body",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))) })
+	@PostMapping
 	public ResponseEntity<HttpStatus> create(@Valid @RequestBody TaskCreationRequestDto taskCreationRequest) {
 		taskService.create(taskCreationRequest);
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping(value = "/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(summary = "Retrieves task details", description = "Retrieve details of a specific task by its ID")
-	@ApiResponses(value = { 
-			@ApiResponse(responseCode = "200", description = "Task details retrieved successfully"),
-			@ApiResponse(responseCode = "404", description = "No task exists in the system with provided-id",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))),
-			@ApiResponse(responseCode = "401", description = "Authentication failure: Invalid access token",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))),
-			@ApiResponse(responseCode = "403", description = "Access denied: Insufficient permissions",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))) })
+	@GetMapping(value = "/{taskId}")
 	public ResponseEntity<TaskResponseDto> retrieve(
 			@PathVariable(required = true, name = "taskId") final String taskId) {
 		final var response = taskService.retrieve(taskId);
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(summary = "Retrieves all tasks of authenticated user", description = "Retrieve details of all tasks corresponding to authenticated user")
-	@ApiResponses(value = { 
-			@ApiResponse(responseCode = "200", description = "Task details retrieved successfully"),
-			@ApiResponse(responseCode = "401", description = "Authentication failure: Invalid access token",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))) })
+	@GetMapping
 	public ResponseEntity<List<TaskResponseDto>> retrieve() {
 		final var response = taskService.retrieve();
 		return ResponseEntity.ok(response);
 	}
 
-	@PutMapping(value = "/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(summary = "Updates task details", description = "Update details of a specified task by its ID")
-	@ApiResponses(value = { 
-			@ApiResponse(responseCode = "200", description = "Task details updated successfully",
-					content = @Content(schema = @Schema(implementation = Void.class))),
-			@ApiResponse(responseCode = "404", description = "No task exists in the system with provided-id",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))),
-			@ApiResponse(responseCode = "401", description = "Authentication failure: Invalid access token",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))),
-			@ApiResponse(responseCode = "403", description = "Access denied: Insufficient permissions",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))) })
+	@PutMapping(value = "/{taskId}")
 	public ResponseEntity<HttpStatus> update(@PathVariable(required = true, name = "taskId") final String taskId,
 			@Valid @RequestBody TaskUpdationRequestDto taskUpdationRequest) {
 		taskService.update(taskId, taskUpdationRequest);
@@ -96,16 +63,6 @@ public class TaskController {
 	}
 
 	@DeleteMapping(value = "/{taskId}")
-	@Operation(summary = "Deletes a task record", description = "Delete a specific task by its ID")
-	@ApiResponses(value = { 
-			@ApiResponse(responseCode = "200", description = "Task deleted successfully",
-					content = @Content(schema = @Schema(implementation = Void.class))),
-			@ApiResponse(responseCode = "404", description = "No task exists in the system with provided-id",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))),
-			@ApiResponse(responseCode = "401", description = "Authentication failure: Invalid access token",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))),
-			@ApiResponse(responseCode = "403", description = "Access denied: Insufficient permissions",
-					content = @Content(schema = @Schema(implementation = ExceptionResponseDto.class))) })
 	public ResponseEntity<HttpStatus> delete(@PathVariable(required = true, name = "taskId") final String taskId) {
 		taskService.delete(taskId);
 		return ResponseEntity.ok().build();

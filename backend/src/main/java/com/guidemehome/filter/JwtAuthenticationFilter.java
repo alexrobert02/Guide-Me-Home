@@ -2,8 +2,6 @@ package com.guidemehome.filter;
 
 import java.util.Optional;
 
-import com.guidemehome.configuration.FirebaseConfiguration;
-import com.guidemehome.configuration.SecurityConfiguration;
 import com.guidemehome.utility.ApiEndpointSecurityInspector;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;

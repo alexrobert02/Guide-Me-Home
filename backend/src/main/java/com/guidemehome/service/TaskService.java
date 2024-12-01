@@ -3,10 +3,9 @@ package com.guidemehome.service;
 import java.util.List;
 
 import com.guidemehome.entity.TaskStatus;
-import com.guidemehome.exception.InvalidTaskIdException;
-import com.guidemehome.exception.TaskOwnershipViolationException;
 import com.guidemehome.utility.AuthenticatedUserIdProvider;
 import com.guidemehome.utility.DateUtility;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.guidemehome.dto.TaskCreationRequestDto;
@@ -19,6 +18,7 @@ import com.google.cloud.firestore.Firestore;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -83,7 +83,7 @@ public class TaskService {
 		final var userId = authenticatedUserIdProvider.getUserId();
 		final var taskBelongsToUser = task.getCreatedBy().equals(userId);
 		if (Boolean.FALSE.equals(taskBelongsToUser)) {
-			throw new TaskOwnershipViolationException();
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied: Insufficient privileges to perform this action.");
 		}
 	}
 
@@ -92,7 +92,7 @@ public class TaskService {
 		final var retrievedDocument = firestore.collection(Task.name()).document(taskId).get().get();
 		final var documentExists = retrievedDocument.exists();
 		if (Boolean.FALSE.equals(documentExists)) {
-			throw new InvalidTaskIdException("No task exists in the system with provided-id");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No task exists in the system with provided-id");
 		}
 		return retrievedDocument;
 	}

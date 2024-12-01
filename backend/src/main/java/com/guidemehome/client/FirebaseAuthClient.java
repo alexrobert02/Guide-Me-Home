@@ -4,7 +4,6 @@ import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import com.guidemehome.dto.TokenSuccessResponseDto;
-import com.guidemehome.exception.InvalidLoginCredentialsException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -86,7 +85,7 @@ public class FirebaseAuthClient {
 					.body(FirebaseSignInResponseDto.class);
 		} catch (HttpClientErrorException exception) {
 			if (exception.getResponseBodyAsString().contains(INVALID_CREDENTIALS_ERROR)) {
-				throw new InvalidLoginCredentialsException();	
+				throw new RuntimeException("Invalid Login Credentials");
 			}
 			throw exception;
 		}

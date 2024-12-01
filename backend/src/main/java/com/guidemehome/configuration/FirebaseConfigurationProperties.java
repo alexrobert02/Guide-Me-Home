@@ -26,12 +26,11 @@ public class FirebaseConfigurationProperties {
 	public void init() {
 		dotenv = Dotenv.load();
 		firebase.setWebApiKey(dotenv.get("FIREBASE_WEBAPI_KEY"));
-		System.out.println("test "+ dotenv.get("FIREBASE_WEBAPI_KEY"));
 	}
 
 	@Getter
 	@Setter
-	public class FireBase {
+	public static class FireBase {
 
 		@NotBlank(message = "Firestore service account file path must be configured")
 		private String serviceAccountFilePath;

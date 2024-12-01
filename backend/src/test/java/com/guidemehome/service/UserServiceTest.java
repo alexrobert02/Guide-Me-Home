@@ -10,12 +10,13 @@ import com.guidemehome.client.FirebaseAuthClient;
 import com.guidemehome.dto.TokenSuccessResponseDto;
 import com.guidemehome.dto.UserCreationRequestDto;
 import com.guidemehome.dto.UserLoginRequestDto;
-import com.guidemehome.exception.AccountAlreadyExistsException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 
@@ -73,12 +74,29 @@ public class UserServiceTest {
         userCreationRequest.setPassword("password123");
         userCreationRequest.setRole("user");
 
-        FirebaseAuthException exception = mock(FirebaseAuthException.class);
-        when(exception.getMessage()).thenReturn("EMAIL_EXISTS");
-        when(firebaseAuth.createUser(any(UserRecord.CreateRequest.class))).thenThrow(exception);
-        
-        assertThrows(AccountAlreadyExistsException.class, () -> userService.create(userCreationRequest));
+        // Mock the "EMAIL_EXISTS" case
+        FirebaseAuthException emailExistsException = mock(FirebaseAuthException.class);
+        when(emailExistsException.getMessage()).thenReturn("EMAIL_EXISTS");
+        when(firebaseAuth.createUser(any(UserRecord.CreateRequest.class))).thenThrow(emailExistsException);
+
+        // Assert that "EMAIL_EXISTS" results in a ResponseStatusException
+        ResponseStatusException conflictException =
+                assertThrows(ResponseStatusException.class, () -> userService.create(userCreationRequest));
+        assertEquals(HttpStatus.CONFLICT, conflictException.getStatusCode());
+        assertEquals("Account with provided email-id already exists", conflictException.getReason());
+
+        // Mock an unhandled FirebaseAuthException case
+        FirebaseAuthException otherException = mock(FirebaseAuthException.class);
+        when(otherException.getMessage()).thenReturn("Some other error");
+        when(firebaseAuth.createUser(any(UserRecord.CreateRequest.class))).thenThrow(otherException);
+
+        // Assert that other exceptions are rethrown as FirebaseAuthException
+        FirebaseAuthException thrownException =
+                assertThrows(FirebaseAuthException.class, () -> userService.create(userCreationRequest));
+        assertEquals("Some other error", thrownException.getMessage());
     }
+
+
 
     @Test
     void testLoginSuccess() throws FirebaseAuthException {
