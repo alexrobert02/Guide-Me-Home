@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@adobe/lit-mobx": "^2.2.2",
     "@capacitor/android": "^6.1.2",
     "@capacitor/cli": "^6.1.2",
     "@capacitor/core": "^6.1.2",
@@ -12,6 +13,9 @@
     "@vis.gl/react-google-maps": "^1.4.0",
     "axios": "^1.7.7",
     "firebase": "^11.0.2",
+    "lit": "^3.2.0",
+    "mobx": "^6.13.2",
+    "mobx-react": "^9.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.2.1",
@@ -22,6 +26,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:android": "npm run build && npx cap sync android && npx cap open android",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
