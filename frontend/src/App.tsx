@@ -6,9 +6,11 @@ import Login from "./pages/Login/LoginHandler";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Home from "./pages/Home/Home";
 import TestPage from "./pages/TestPage/TestPage";
+import { initApp } from "./InitApp";
 
 function App() {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+  initApp();
 
   return (
     <Routes>
