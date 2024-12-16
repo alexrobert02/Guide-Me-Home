@@ -1,103 +1,90 @@
-import * as React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Form, Input, Button, Radio, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
 
-function RegisterForm({ onRegister }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState("user");
+const { Title, Text } = Typography;
 
+function RegisterForm({ onRegister }) {
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
+  const handleFinish = (values) => {
+    if (values.password !== values.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
-    onRegister({ email, password, role });
-    // onRegister({ email, password });
+    onRegister({ email: values.email, password: values.password, role: values.role });
   };
 
   return (
-    <div className="auth-container">
-      <h2 className="title">Register</h2>
-      <form onSubmit={handleSubmit} className="form">
-        <div className="form-group">
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="form-input"
-          />
-        </div>
-        <div className="form-group">
-          <label>Password:</label>
-          <input
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="form-input"
-          />
-        </div>
-        <div className="form-group">
-          <label>Confirm Password:</label>
-          <input
-            type={showPassword ? "text" : "password"}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            className="form-input"
-          />
-        </div>
-        <button
-          type="button"
-          className="show-password-btn"
-          onClick={() => setShowPassword(!showPassword)}
+      <div className="auth-container">
+        <Title level={2}>Register</Title>
+        <Form
+            name="register"
+            layout="vertical"
+            onFinish={handleFinish}
+            autoComplete="off"
         >
-          {showPassword ? "Hide Password" : "Show Password"}
-        </button>
-        <div className="form-group">
-          <label>Role:</label>
-          <div className="role-options">
-            <label>
-              <input
-                type="radio"
-                name="role"
-                value="user"
-                checked={role === "user"}
-                onChange={() => setRole("user")}
-              />
-              User
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="role"
-                value="assistant"
-                checked={role === "assistant"}
-                onChange={() => setRole("assistant")}
-              />
-              Assistant
-            </label>
-          </div>
-        </div>
-        <button type="submit" className="submit-button">
-          Register
-        </button>
-      </form>
-      <p className="redirect-text">
-        Do you already have an account?{" "}
-        <span className="redirect-link" onClick={() => navigate("/login")}>
-          Login here
-        </span>
-      </p>
-    </div>
+          <Form.Item
+              label="Email"
+              name="email"
+              rules={[{ required: true, message: "Please input your email!" }]}
+          >
+            <Input type="email" placeholder="Enter your email" />
+          </Form.Item>
+
+          <Form.Item
+              label="Password"
+              name="password"
+              rules={[{ required: true, message: "Please input your password!" }]}
+          >
+            <Input.Password
+                placeholder="Enter your password"
+            />
+          </Form.Item>
+
+          <Form.Item
+              label="Confirm Password"
+              name="confirmPassword"
+              dependencies={['password']}
+              rules={[
+                { required: true, message: "Please confirm your password!" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('password') === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('The two passwords do not match!'));
+                  },
+                }),
+              ]}
+          >
+            <Input.Password
+                placeholder="Confirm your password"
+            />
+          </Form.Item>
+          <Form.Item
+              label="Role"
+              name="role"
+              initialValue="user"
+              rules={[{ required: true, message: "Please select a role!" }]}
+          >
+            <Radio.Group>
+              <Radio value="user">User</Radio>
+              <Radio value="assistant">Assistant</Radio>
+            </Radio.Group>
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>
+              Register
+            </Button>
+          </Form.Item>
+        </Form>
+        <Text className="redirect-text">
+          Do you already have an account?{' '}
+          <Button type="link" onClick={() => navigate("/login")}>Login here</Button>
+        </Text>
+      </div>
   );
 }
 
