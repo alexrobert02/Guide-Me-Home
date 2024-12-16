@@ -25,33 +25,39 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserService {
 
-	private final Firestore firestore;
-	private final FirebaseAuth firebaseAuth;
-	private final FirebaseAuthClient firebaseAuthClient;
+    private final Firestore firestore;
+    private final FirebaseAuth firebaseAuth;
+    private final FirebaseAuthClient firebaseAuthClient;
 
-	@SneakyThrows
-	public void create(@NonNull final UserCreationRequestDto userCreationRequest) {
-		final var request = new CreateRequest();
-		request.setEmail(userCreationRequest.getEmail());
-		request.setPassword(userCreationRequest.getPassword());
-		request.setEmailVerified(Boolean.TRUE);
+    @SneakyThrows
+    public void create(@NonNull final UserCreationRequestDto userCreationRequest) {
+        final var request = new CreateRequest();
+        request.setEmail(userCreationRequest.getEmail());
+        request.setPassword(userCreationRequest.getPassword());
+        request.setEmailVerified(Boolean.TRUE);
 
-		try {
-			UserRecord userRecord = firebaseAuth.createUser(request);
-			Map<String, Object> userProfile = new HashMap<>();
-			userProfile.put("email", userCreationRequest.getEmail());
-			userProfile.put("role", userCreationRequest.getRole());
-			firestore.collection("users").document(userRecord.getUid()).set(userProfile);
-		} catch (final FirebaseAuthException exception) {
-			if (exception.getMessage().contains("EMAIL_EXISTS")) {
-				throw new ResponseStatusException(HttpStatus.CONFLICT, "Account with provided email-id already exists");
-			}
-			throw exception;
-		}
-	}
+        try {
+            UserRecord userRecord = firebaseAuth.createUser(request);
+            Map<String, Object> userProfile = new HashMap<>();
+            userProfile.put("email", userCreationRequest.getEmail());
+//            userProfile.put("role", userCreationRequest.getRole());
+            if (userCreationRequest.getRole().equals("user")) {
+                firestore.collection("users").document(userRecord.getUid()).set(userProfile);
+            } else if (userCreationRequest.getRole().equals("assistant")) {
+                firestore.collection("assistants").document(userRecord.getUid()).set(userProfile);
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role must be either 'user' or 'admin'");
+            }
+        } catch (final FirebaseAuthException exception) {
+            if (exception.getMessage().contains("EMAIL_EXISTS")) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Account with provided email-id already exists");
+            }
+            throw exception;
+        }
+    }
 
-	public TokenSuccessResponseDto login(@NonNull final UserLoginRequestDto userLoginRequest) throws FirebaseAuthException {
-		return firebaseAuthClient.login(userLoginRequest);
-	}
+    public TokenSuccessResponseDto login(@NonNull final UserLoginRequestDto userLoginRequest) throws FirebaseAuthException {
+        return firebaseAuthClient.login(userLoginRequest);
+    }
 
 }
