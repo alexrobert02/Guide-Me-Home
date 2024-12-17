@@ -101,9 +101,7 @@ public class InvitationService {
         }
 
         String senderId = requestDoc.getString("senderId");
-        System.out.println(senderId);
         String recipientId = requestDoc.getString("recipientId");
-        System.out.println(recipientId);
 
         // Referința către documentul din Firestore
         DocumentReference userRef = firestore.collection("users").document(senderId);
