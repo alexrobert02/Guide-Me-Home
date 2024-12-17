@@ -46,7 +46,7 @@ public class FirebaseAuthClient {
 
 		System.out.println("Token: " + response.getIdToken());
 		return TokenSuccessResponseDto.builder()
-				.accessToken(response.getIdToken())
+				.accessToken(uuid)
 				.role(role)
 				.build();
 	}

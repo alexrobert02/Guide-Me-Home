@@ -26,7 +26,7 @@ function LoginHandler() {
         const data = response.data;
         localStorage.setItem("isAuthenticated", TRUE_STRING);
         localStorage.setItem("role", data.role);
-        localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("id", data.accessToken);
         navigate("/");
       } else {
         alert("Invalid email, password, or role. Please try again.");
