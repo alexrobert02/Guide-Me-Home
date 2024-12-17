@@ -23,10 +23,15 @@ function LoginHandler() {
       );
 
       if (response.status === 200) {
+        console.log("Authentication successful!")
         const data = response.data;
         localStorage.setItem("isAuthenticated", TRUE_STRING);
         localStorage.setItem("role", data.role);
+
         localStorage.setItem("id", data.accessToken);
+
+        window.location.reload();
+
         navigate("/");
       } else {
         alert("Invalid email, password, or role. Please try again.");
