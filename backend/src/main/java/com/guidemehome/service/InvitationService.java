@@ -105,9 +105,11 @@ public class InvitationService {
 
         // Referința către documentul din Firestore
         DocumentReference userRef = firestore.collection("users").document(senderId);
+        DocumentReference assistantRef = firestore.collection("assistants").document(recipientId);
 
         // Adaugă recipientId în câmpul assistants, care este un array
         userRef.update("assistants", FieldValue.arrayUnion(recipientId));
+        assistantRef.update("assistedUser", senderId);
 
 
         // Șterge cererea
