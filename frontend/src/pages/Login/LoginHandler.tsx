@@ -28,7 +28,7 @@ function LoginHandler() {
         localStorage.setItem("isAuthenticated", TRUE_STRING);
         localStorage.setItem("role", data.role);
 
-        localStorage.setItem("id", data.accessToken);
+        localStorage.setItem("token", data.accessToken);
 
         window.location.reload();
 
