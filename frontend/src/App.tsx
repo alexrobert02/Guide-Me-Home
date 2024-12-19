@@ -7,6 +7,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Home from "./pages/Home/Home";
 import Map from "./pages/Map/Map";
 import TestPage from "./pages/TestPage/TestPage";
+import Contacts from "./pages/Contacts/Contacts";
 import { initApp } from "./InitApp";
 
 function App() {
@@ -33,6 +34,9 @@ function App() {
       <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
         <Route path="/map" element={<Map />} />
       </Route>
+        <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
+            <Route path="/contacts" element={<Contacts />} />
+        </Route>
 
       <Route path="/debug" element={<TestPage></TestPage>} />
 

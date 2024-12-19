@@ -42,6 +42,9 @@ const Home: React.FC = () => {
                     <Menu.Item key="home" icon={<HomeOutlined />}>
                         Home
                     </Menu.Item>
+                    <Menu.Item key="contacts" icon={<HomeOutlined />} onClick={(e) => navigate("/contacts")}>
+                        Emergency Contacts
+                    </Menu.Item>
                     <Menu.Item key="about" icon={<UpSquareOutlined /> } onClick={(e) => navigate("/map")}>
                         Map
                     </Menu.Item>
