@@ -1,7 +1,6 @@
 package com.guidemehome.controller;
 
 import com.guidemehome.configuration.PublicEndpoint;
-import com.guidemehome.dto.AssistantDto;
 import com.guidemehome.service.LiveTrackingLocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +15,11 @@ public class LiveTrackingLocationController {
     @Autowired
     private LiveTrackingLocationService liveTrackingLocationService;
 
-    @PostMapping
+    @GetMapping("/{assistantId}")
     @PublicEndpoint
-    public ResponseEntity<Map<String, Object>> getLiveLocation(@RequestBody AssistantDto assistantDto) {
+    public ResponseEntity<Map<String, Object>> getLiveLocation(@PathVariable("assistantId") String assistantId) {
         try {
-            Map<String, Object> location = liveTrackingLocationService.getAssistedUserLocation(assistantDto.getAssistantId());
+            Map<String, Object> location = liveTrackingLocationService.getAssistedUserLocation(assistantId);
             return ResponseEntity.ok(location);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));

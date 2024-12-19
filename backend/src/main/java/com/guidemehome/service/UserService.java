@@ -1,5 +1,9 @@
 package com.guidemehome.service;
 
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.CollectionReference;
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.firebase.auth.UserRecord;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,8 +22,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -59,5 +66,48 @@ public class UserService {
     public TokenSuccessResponseDto login(@NonNull final UserLoginRequestDto userLoginRequest) throws FirebaseAuthException {
         return firebaseAuthClient.login(userLoginRequest);
     }
+
+    public List<String> getAllAssistants(String userId) throws ExecutionException, InterruptedException, IllegalArgumentException {
+        // Reference to the user document
+        DocumentReference userRef = firestore.collection("users").document(userId);
+
+        // Fetch the user document
+        ApiFuture<DocumentSnapshot> userFuture = userRef.get();
+        DocumentSnapshot userDocument = userFuture.get();
+
+        if (!userDocument.exists()) {
+            throw new IllegalArgumentException("User not found!");
+        }
+
+        // Retrieve the list of assistant IDs from the user document
+        List<String> assistantIds = (List<String>) userDocument.get("assistants");
+        if (assistantIds == null || assistantIds.isEmpty()) {
+            return new ArrayList<>(); // Return an empty list if there are no assistants
+        }
+
+        // Collection reference for assistants
+        CollectionReference assistantRef = firestore.collection("assistants");
+        List<String> assistantEmails = new ArrayList<>();
+
+        // Fetch each assistant's email by ID
+        for (String assistantId : assistantIds) {
+            DocumentReference assistantDocRef = assistantRef.document(assistantId);
+            ApiFuture<DocumentSnapshot> assistantFuture = assistantDocRef.get();
+            DocumentSnapshot assistantDocument = assistantFuture.get();
+
+            if (!assistantDocument.exists()) {
+                throw new IllegalArgumentException("Utilizatorul nu există în colectia assistants!");
+            }
+
+            // Extract the email field and add it to the list
+            String assistantEmail = assistantDocument.getString("email");
+            if (assistantEmail != null) {
+                assistantEmails.add(assistantEmail);
+            }
+        }
+
+        return assistantEmails;
+    }
+
 
 }

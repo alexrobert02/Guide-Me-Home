@@ -13,10 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import com.guidemehome.utility.AuthenticatedUserIdProvider;
@@ -83,7 +80,7 @@ public class InvitationService {
             throw new IllegalArgumentException("Invitația nu este validă sau a expirat!");
         }
 
-        DocumentSnapshot requestDoc = querySnapshot.get().getDocuments().get(0);
+        DocumentSnapshot requestDoc = querySnapshot.get().getDocuments().getFirst();
 
         // Preia expiresAt ca Map și extrage valorile
         Map<String, Object> expiresAtMap = (Map<String, Object>) requestDoc.get("expiresAt");
