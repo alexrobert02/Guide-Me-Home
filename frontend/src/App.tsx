@@ -11,7 +11,10 @@ import { initApp } from "./InitApp";
 
 function App() {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-  initApp();
+  if(isAuthenticated)
+  {
+    initApp();
+  }
 
   return (
     <Routes>
