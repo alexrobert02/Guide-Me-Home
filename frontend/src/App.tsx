@@ -9,6 +9,7 @@ import Map from "./pages/Map/Map";
 import TestPage from "./pages/TestPage/TestPage";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { AppInitializer } from "./AppInitializer";
+import Contacts from "./pages/Contacts/Contacts";
 
 function App() {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
@@ -35,6 +36,9 @@ function App() {
         </Route>
         <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
           <Route path="/map" element={<Map />} />
+        </Route>
+        <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
+            <Route path="/contacts" element={<Contacts />} />
         </Route>
 
         <Route path="/debug" element={<TestPage></TestPage>} />
