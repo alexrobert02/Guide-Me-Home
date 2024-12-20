@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react';
-import { locator } from '../InitApp';
 import { AdvancedMarker } from '@vis.gl/react-google-maps';
 import * as React from 'react';
 import './CurrentPositionMarker.css';
-import { LocationStore } from '../stores/LocationStore';
+import { LocationStore } from '../../stores/LocationStore';
+import { locator } from '../../AppInitializer';
 
 
 const CurrentPositionMarker = observer (() => {
