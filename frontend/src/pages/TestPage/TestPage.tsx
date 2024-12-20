@@ -1,5 +1,5 @@
 import * as React from "react";
-import { locator } from "../../InitApp";
+import { locator } from "../../AppInitializer";
 
 /**
  * Component used for debug and testing purposes
