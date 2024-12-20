@@ -2,6 +2,7 @@ import { Geolocation } from "@capacitor/geolocation";
 import { Motion } from "@capacitor/motion";
 import type { Position } from "@capacitor/geolocation";
 import { DEFAULT_BACKEND_API_URL } from "../ProjectDefaults";
+import { getUserEmail, getUserId } from "./tokenDecoder";
 
 export interface LocationObserver {
   onLocationChanged: (position: Position) => void;
@@ -79,7 +80,7 @@ export class LocationService {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId: localStorage.getItem("id"),
+            userId: getUserId(),
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
             timestamp: position.timestamp,
