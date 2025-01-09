@@ -1,62 +1,53 @@
-import * as React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Form, Input, Button, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
 
+const { Title, Text } = Typography;
+
 function LoginForm({ onLogin }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
 
-  const navigate = useNavigate();
+    const handleFinish = (values) => {
+        onLogin(values);
+    };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onLogin({ email, password });
-  };
-
-  return (
-    <div className="auth-container">
-      <h2 className="title">Login</h2>
-      <form onSubmit={handleSubmit} className="form">
-        <div className="form-group">
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="form-input"
-          />
+    return (
+        <div className="auth-container" style={{ maxWidth: 300, margin: "0 auto" }}>
+            <Title level={2}>Login</Title>
+            <Form
+                name="login"
+                layout="vertical"
+                onFinish={handleFinish}
+                autoComplete="off"
+            >
+                <Form.Item
+                    label="Email"
+                    name="email"
+                    rules={[{ required: true, message: "Please input your email!" }]}
+                >
+                    <Input type="email" placeholder="Enter your email" />
+                </Form.Item>
+                <Form.Item
+                    label="Password"
+                    name="password"
+                    rules={[{ required: true, message: "Please input your password!" }]}
+                >
+                    <Input.Password
+                        placeholder="Enter your password"
+                    />
+                </Form.Item>
+                <Form.Item>
+                    <Button type="primary" htmlType="submit" block>
+                        Login
+                    </Button>
+                </Form.Item>
+            </Form>
+            <Text className="redirect-text">
+                Don't have an account?{' '}
+                <Button type="link" onClick={() => navigate("/register")}>Register here</Button>
+            </Text>
         </div>
-        <div className="form-group">
-          <label>Password:</label>
-          <input
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="form-input"
-          />
-        </div>
-        <button
-          type="button"
-          className="show-password-btn"
-          onClick={() => setShowPassword(!showPassword)}
-        >
-          {showPassword ? "Hide Password" : "Show Password"}
-        </button>
-        <button type="submit" className="submit-button">
-          Login
-        </button>
-      </form>
-      <p className="redirect-text">
-        Don't have an account?{" "}
-        <span className="redirect-link" onClick={() => navigate("/register")}>
-          Register here
-        </span>
-      </p>
-    </div>
-  );
+    );
 }
 
 export default LoginForm;

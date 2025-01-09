@@ -6,7 +6,18 @@ spring:
   jackson:
     deserialization:
       fail-on-unknown-properties: true
-    
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: fii.pregatit.uaic@gmail.com
+    password: fpfo bzyr ekfv skfv
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 com:
   guidemehome:
     firebase:
