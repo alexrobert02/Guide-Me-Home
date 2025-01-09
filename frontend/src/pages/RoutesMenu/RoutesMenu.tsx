@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import { MenuButton } from "../../components/MenuButton";
 import { BackButton } from "../../components/BackButton";
 import { observer } from "mobx-react";
 import { RoutesStore } from "../../stores/RoutesStore";
@@ -10,6 +9,11 @@ import { MapStore } from "../../stores/MapStore";
 import { MapModelFactory } from "../../map/models/MapModel";
 import { RouteService } from "../../services/RouteService";
 import { MarkerModel } from "../../map/models/MarkerModel";
+import { Button, Layout, Typography } from "antd";
+import { PlusOutlined } from "@ant-design/icons"; // Import the Plus icon
+import { Tooltip } from "antd"; // Tooltip for additional context
+
+const { Content } = Layout;
 
 
 export const RoutesMenu: React.FC = observer(() => {
@@ -21,44 +25,47 @@ export const RoutesMenu: React.FC = observer(() => {
     return (
         <div>
             <BackButton/>
-            <div
-                style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh"}}
-            >
-            {
-                routesStore.routes.map((route, index) => {
-                    return (
-                        <MenuButton
-                            text={route.name}
-                            onClick={
-                                async () => {
-                                    // TODO: this logic should be moved from these
-                                    routesStore.selectRoute(route);
-                                    routesStore.setEditable(false);
-                                    const newModel = MapModelFactory.createFromWaypoints(route.waypoints);
-                                    const result = await _getRouteResult(newModel.markers, routeService); 
-                                    newModel.routeResult = result;
-                                    mapStore.setCurrentMapModel(newModel);
-                                    navigate("/map");
-                                }
-                            }
-                        />
-                    );
-                })
-            }
-            {/* TODO: this should be a + */}
-            <MenuButton
-                text="+"
-                onClick={
-                    () => {
-                        routesStore.unselectRoute();
-                        routesStore.setEditable(true);
-                        mapStore.setCurrentMapModel(MapModelFactory.createEmpty());
-
-                        navigate("/map");
+            <Layout style={{minWidth: 240 , maxWidth: 300, margin: "0 auto" }}>
+                <Content style={{ display: "flex", flexDirection: "column", alignItems: "center"}}>
+                    {
+                        routesStore.routes.map((route, index) => {
+                            return (
+                                <Button
+                                    size="large"
+                                    style = {{ marginBottom: 16 , width: "100%"}}
+                                    onClick={
+                                        async () => {
+                                            // TODO: this logic should be moved from these
+                                            routesStore.selectRoute(route);
+                                            routesStore.setEditable(false);
+                                            const newModel = MapModelFactory.createFromWaypoints(route.waypoints);
+                                            const result = await _getRouteResult(newModel.markers, routeService);
+                                            newModel.routeResult = result;
+                                            mapStore.setCurrentMapModel(newModel);
+                                            navigate("/map");
+                                        }
+                                    }>{route.name}</Button>
+                            );
+                        })
                     }
-                }
-                ></MenuButton>
-            </div>
+                    <Tooltip title="Add New Route">
+                    <Button
+                        size="large"
+                        shape="circle" // Makes it circular
+                        icon={<PlusOutlined />} // Adds the plus icon
+                        onClick={
+                            () => {
+                                routesStore.unselectRoute();
+                                routesStore.setEditable(true);
+                                mapStore.setCurrentMapModel(MapModelFactory.createEmpty());
+
+                                navigate("/map");
+                            }
+                        }/>
+                    </Tooltip>
+
+                </Content>
+            </Layout>
         </div>
     );
 });

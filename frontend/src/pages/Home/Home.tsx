@@ -1,11 +1,13 @@
 import * as React from "react";
 import { useState } from "react";
-import { Menu, Button, Drawer } from "antd";
-import { HomeOutlined, SettingOutlined, InfoCircleOutlined, UpSquareOutlined } from "@ant-design/icons";
+import {Menu, Button, Drawer, Typography, Layout} from "antd";
+import { HomeOutlined, SettingOutlined, InfoCircleOutlined, UpSquareOutlined, ExclamationCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { PanicButton } from "../../components/PanicButton";
 import { MenuButton } from "../../components/MenuButton";
 
+const { Content } = Layout;
+const { Title } = Typography;
 
 const Home: React.FC = () => {
     const [visible, setVisible] = useState(false);
@@ -53,19 +55,59 @@ const Home: React.FC = () => {
                     <Menu.Item key="settings" icon={<SettingOutlined />}>
                         Settings
                     </Menu.Item>
-                    <Menu.Item key="about" icon={<InfoCircleOutlined />}>
+                    <Menu.Item key="panic" icon={<ExclamationCircleOutlined />}>
+                        Panic
+                    </Menu.Item>
+                    <Menu.Item key="about" icon={<QuestionCircleOutlined />}>
                         About
                     </Menu.Item>
                 </Menu>
             </Drawer>
-            <div
-                style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh"}}
-            >
-                <PanicButton />
-                <MenuButton onClick= {() => {console.log("testButton pressed")}} text="Test" />
-                <MenuButton onClick= {() => {navigate("/contacts")}} text="Contacts" />
-                <MenuButton onClick= {() => {navigate("/routes")}} text="Routes" />
-            </div>
+            <Title level={2}>
+                GUIDE ME HOME
+            </Title>
+            <Layout style={{ maxWidth: 300, margin: "0 auto" }}>
+                <Content style={{ display: "flex", flexDirection: "column"}}>
+
+
+                    <Button
+                        type="primary"
+                        shape="circle"
+                        size="large"
+                        style={{
+                            height: "100px",
+                            backgroundColor: "red",
+                            borderColor: "red",
+                            color: "white",
+                            fontSize: "24px",
+                            fontWeight: "bold",
+                            marginTop: "60px",
+                            marginBottom: "20px"
+                        }}
+                        onClick={() => console.log("Panic Button pressed")}
+                    >
+                        PANIC
+                    </Button>
+
+                    <Button
+                        type="default"
+                        size="large"
+                        style={{ marginBottom: 16 }}
+                        onClick={() => navigate("/contacts")}
+                    >
+                        Contacts
+                    </Button>
+
+                    <Button
+                        type="default"
+                        size="large"
+                        style={{ marginBottom: 16 }}
+                        onClick={() => navigate("/routes")}
+                    >
+                        Routes
+                    </Button>
+                </Content>
+            </Layout>
         </div>
     );
 };
