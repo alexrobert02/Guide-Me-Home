@@ -13,6 +13,7 @@ const Map = observer(() => {
     const mapStore = locator.get("MapStore") as MapStore;
     const routesStore = locator.get("RoutesStore") as RoutesStore;
     const navigate = useNavigate();
+    const [isEditing, setIsEditing] = React.useState(false);
 
     //TODO: move this into the mapWrapper
     const saveRoute = () => {

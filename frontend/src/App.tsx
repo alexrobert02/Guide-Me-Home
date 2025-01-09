@@ -47,6 +47,8 @@ function App() {
         </Route>
         <Route path="/debug" element={<TestPage></TestPage>} />
 
+        <Route path="/debug" element={<TestPage></TestPage>} />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       }
