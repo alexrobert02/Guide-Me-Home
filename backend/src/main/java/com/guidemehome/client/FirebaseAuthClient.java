@@ -44,6 +44,7 @@ public class FirebaseAuthClient {
 
 		String role = fetchUserRole(uuid);
 
+		System.out.println("Token: " + response.getIdToken());
 		return TokenSuccessResponseDto.builder()
 				.accessToken(response.getIdToken())
 				.role(role)
@@ -54,10 +55,15 @@ public class FirebaseAuthClient {
 
 	private String fetchUserRole(String uuid) {
 		try {
-			DocumentSnapshot documentSnapshot = firestore.collection("users").document(uuid).get().get();
-			if (documentSnapshot.exists() && documentSnapshot.contains("role")) {
-				return documentSnapshot.getString("role");
-			} else {
+			DocumentSnapshot documentSnapshotUsers = firestore.collection("users").document(uuid).get().get();
+			DocumentSnapshot documentSnapshotAssistants = firestore.collection("assistants").document(uuid).get().get();
+			if (documentSnapshotUsers.exists()) {
+				return "user";
+			}
+			else if (documentSnapshotAssistants.exists()) {
+				return "assistant";
+			}
+			else {
 				System.out.println("No valid document or role field found for uuid: " + uuid);
 				throw new RuntimeException("No user found for the provided uuid.");
 			}
