@@ -29,14 +29,14 @@ const Contacts: React.FC = () => {
     const handleSendEmail = async () => {
 
         console.log("Email sent to:", email);
-        console.log("User id:", getUserId())
         setEmail("");
 
         try {
             const response = await axios.post(
                 `${DEFAULT_BACKEND_API_URL}/api/v1/invitation`, {
                     senderId: getUserId(),
-                    recipientEmail: email
+                    recipientEmail: email,
+                    defaultBackendApiUrl: DEFAULT_BACKEND_API_URL
                 },
                 {
                     headers: {

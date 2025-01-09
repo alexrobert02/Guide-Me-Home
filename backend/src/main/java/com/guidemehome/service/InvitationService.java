@@ -33,7 +33,7 @@ public class InvitationService {
 
 //    private final AuthenticatedUserIdProvider authenticatedUserIdProvider;
 
-    public void sendInvitationRequest(String senderId, String recipientEmail) throws ExecutionException, InterruptedException {
+    public void sendInvitationRequest(String senderId, String recipientEmail, String defaultBackendApiUrl) throws ExecutionException, InterruptedException {
         // Obține UUID-ul utilizatorului din Firebase Authentication
         UserRecord userRecord;
         try {
@@ -66,7 +66,7 @@ public class InvitationService {
         firestore.collection("pending_requests").add(request);
 
         // Trimite e-mail destinatarului
-        String tokenUrl = "http://localhost:8080/api/v1/invitation/accept?token=" + token;
+        String tokenUrl = defaultBackendApiUrl+"/api/v1/invitation/accept?token=" + token;
         emailService.sendInvitation(senderId, recipientEmail, tokenUrl);
     }
 
