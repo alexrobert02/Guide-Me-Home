@@ -8,4 +8,5 @@ import lombok.Setter;
 public class InvitationDto {
     private String senderId;
     private String recipientEmail;
+    private String defaultBackendApiUrl;
 }
