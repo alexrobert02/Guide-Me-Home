@@ -1,10 +1,11 @@
 export class RouteService {
     
     private _dirrectionService: google.maps.DirectionsService;
+    private _directionRenderer: google.maps.DirectionsRenderer;
 
     constructor(private readonly _routesLibrary: google.maps.RoutesLibrary) {
         this._dirrectionService = new google.maps.DirectionsService();
-
+        this._directionRenderer = new google.maps.DirectionsRenderer();
     }
 
     /**
@@ -42,6 +43,6 @@ export class RouteService {
     }
 
     public get directionRenderer(): google.maps.DirectionsRenderer {
-        return new this._routesLibrary.DirectionsRenderer();
+        return this._directionRenderer;
     }
 }

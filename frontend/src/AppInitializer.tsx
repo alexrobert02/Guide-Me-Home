@@ -3,8 +3,9 @@ import { LocationService } from "./services/LocationService";
 import { LocationStore } from "./stores/LocationStore";
 import { RouteService } from "./services/RouteService";
 import React from "react";
-import { MapControllerStore } from "./stores/MapControllerStore";
 import { MapStore } from "./stores/MapStore";
+import { RoutesStore } from "./stores/RoutesStore";
+import { dummyRoutes } from "./dummyData";
 
 export var locator = new Map();
 
@@ -28,15 +29,16 @@ export function AppInitializer({ appInitializedCallback }: AppInitializerProps) 
     const locationService = new LocationService();
     const locationStore = new LocationStore(locationService);
     const routesService = new RouteService(routesLibrary);
-    const mapControllerStore = new MapControllerStore();
-    const mapStore = new MapStore();
+    const mapStore = new MapStore(routesService);
+    const routesStore = new RoutesStore();
+    routesStore.setRoutes(dummyRoutes);
 
     
     locator.set("LocationService", locationService);
     locator.set("LocationStore", locationStore);
     locator.set("RouteService", routesService);
-    locator.set("MapControllerStore", mapControllerStore);
     locator.set("MapStore", mapStore);
+    locator.set("RoutesStore", routesStore);
 
     appInitializedCallback();
     return (null);

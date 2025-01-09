@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Menu, Button, Drawer } from "antd";
 import { HomeOutlined, SettingOutlined, InfoCircleOutlined, UpSquareOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { PanicButton } from "../../components/PanicButton";
+import { MenuButton } from "../../components/MenuButton";
 
 
 const Home: React.FC = () => {
@@ -56,6 +58,14 @@ const Home: React.FC = () => {
                     </Menu.Item>
                 </Menu>
             </Drawer>
+            <div
+                style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh"}}
+            >
+                <PanicButton />
+                <MenuButton onClick= {() => {console.log("testButton pressed")}} text="Test" />
+                <MenuButton onClick= {() => {navigate("/contacts")}} text="Contacts" />
+                <MenuButton onClick= {() => {navigate("/routes")}} text="Routes" />
+            </div>
         </div>
     );
 };

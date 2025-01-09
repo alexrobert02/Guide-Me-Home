@@ -10,6 +10,7 @@ import TestPage from "./pages/TestPage/TestPage";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { AppInitializer } from "./AppInitializer";
 import Contacts from "./pages/Contacts/Contacts";
+import { RoutesMenu } from "./pages/RoutesMenu/RoutesMenu";
 
 function App() {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
@@ -18,7 +19,8 @@ function App() {
 
   return (
     <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
-      <AppInitializer appInitializedCallback={() => setAppInitialized(true)} />
+      { !appInitialized &&
+        <AppInitializer appInitializedCallback={() => setAppInitialized(true)} />}
       {
         appInitialized &&
         <Routes>
@@ -40,7 +42,9 @@ function App() {
         <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
             <Route path="/contacts" element={<Contacts />} />
         </Route>
-
+        <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
+          <Route path="/routes" element={<RoutesMenu/>} />
+        </Route>
         <Route path="/debug" element={<TestPage></TestPage>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />

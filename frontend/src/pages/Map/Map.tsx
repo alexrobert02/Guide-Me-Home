@@ -1,39 +1,37 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
-import { LeftCircleOutlined } from "@ant-design/icons";
 import MapWrapper from "../../map/components/MapWrapper";
-import { MapControllerStore } from "../../stores/MapControllerStore";
 import { locator } from "../../AppInitializer";
-import { RouteCreationMapController } from "../../map/controllers/RouteCreationMapController";
 import { MapStore } from "../../stores/MapStore";
 import { observer } from "mobx-react";
-import { RouteService } from "../../services/RouteService";
+import { BackButton } from "../../components/BackButton";
+import { RoutesStore } from "../../stores/RoutesStore";
+import { RouteModelFactory } from "../../map/models/RouteModel";
+import { useNavigate } from "react-router-dom";
 
 const Map = observer(() => {
-    const navigate = useNavigate();
-    const [isEditing, setIsEditing] = React.useState(false);
 
-    const handleBackClick = () => {
-        navigate("/");
-    };
-
-    const mapControllerStore = locator.get("MapControllerStore") as MapControllerStore;
     const mapStore = locator.get("MapStore") as MapStore;
-    const routeService = locator.get("RouteService") as RouteService;
+    const routesStore = locator.get("RoutesStore") as RoutesStore;
+    const navigate = useNavigate();
 
-    const triggerMapEditMode = () => {
-        if (!isEditing) {
-            mapControllerStore.setCurrentController(new RouteCreationMapController(mapStore, routeService));
-        } else {
-            mapControllerStore.popController();
-        }
-        setIsEditing(!isEditing)
+    //TODO: move this into the mapWrapper
+    const saveRoute = () => {
+        // TODO: this will be modified when we will have routes in backend
+        const route = RouteModelFactory.createFromMapModel(mapStore.currentMapModel, "New Saved Route");
+        mapStore.reset();
+        routesStore.addRoute(route);
+        navigate("/routes");
     };
+
+    const startEdit = () => {
+        mapStore.setCurrentlyEditing(true);
+    }
 
     return (
         <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-            <button 
-            onClick={triggerMapEditMode}
+            { routesStore.editable &&
+                <button 
+            onClick={mapStore.currentlyEditing ? saveRoute: startEdit}
             style={{
                 width: '100px',
                 height: '50px',
@@ -42,23 +40,11 @@ const Map = observer(() => {
                 right: '10px',
                 zIndex: 1000,
             }}
-            >Edit</button>
-            {/* Back Button */}
-            <LeftCircleOutlined
-                onClick={handleBackClick}
-                style={{
-                    position: 'absolute',
-                    top: '10px',
-                    left: '10px',
-                    zIndex: 1000,
-                    padding: '10px 15px',
-                    backgroundColor: '#007BFF',
-                    color: '#FFF',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer'
-                }}
-            />
+            >{
+                mapStore.currentlyEditing ? "Save": "Edit"
+            }
+            </button>}
+            <BackButton/>
             <MapWrapper />
         </div>
     );

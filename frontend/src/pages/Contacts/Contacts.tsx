@@ -4,6 +4,7 @@ import { Input, Button, List, Typography } from "antd";
 import {getUserEmail, getUserId} from "../../services/tokenDecoder";
 import axios from "axios";
 import {DEFAULT_BACKEND_API_URL} from "../../ProjectDefaults";
+import { BackButton } from "../../components/BackButton";
 
 const Contacts: React.FC = () => {
     const [isModified, setIsModified] = useState<boolean>(false);
@@ -68,29 +69,33 @@ const Contacts: React.FC = () => {
     }, [isModified]);
 
     return (
-        <div style={{ padding: "16px" }}>
-            <div style={{ marginBottom: "16px" }}>
-                <Input
-                    placeholder="Enter an assistant's email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    style={{ marginBottom: "8px" }}
+        <div>
+            <BackButton />
+            <div style={{ padding: "16px" }}>
+                <div style={{ marginBottom: "16px" }}>
+                    <Input
+                        placeholder="Enter an assistant's email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        style={{ marginBottom: "8px" }}
+                    />
+                    <Button type="primary" onClick={handleSendEmail} block>
+                        Send
+                    </Button>
+                </div>
+                <List
+                    header={<Typography.Title level={4}>Emergency Contacts</Typography.Title>}
+                    bordered
+                    dataSource={contacts}
+                    renderItem={(item) => (
+                        <List.Item>
+                            <Typography.Text>{item}</Typography.Text>
+                        </List.Item>
+                    )}
                 />
-                <Button type="primary" onClick={handleSendEmail} block>
-                    Send
-                </Button>
             </div>
-            <List
-                header={<Typography.Title level={4}>Emergency Contacts</Typography.Title>}
-                bordered
-                dataSource={contacts}
-                renderItem={(item) => (
-                    <List.Item>
-                        <Typography.Text>{item}</Typography.Text>
-                    </List.Item>
-                )}
-            />
         </div>
+
     );
 };
 
