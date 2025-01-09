@@ -17,7 +17,7 @@ public class InvitationController {
     @PostMapping
     public ResponseEntity<String> sendInvitation(@RequestBody InvitationDto invitationDto) {
         try {
-            invitationService.sendInvitationRequest(invitationDto.getSenderId(), invitationDto.getRecipientEmail());
+            invitationService.sendInvitationRequest(invitationDto.getSenderId(), invitationDto.getRecipientEmail(), invitationDto.getDefaultBackendApiUrl());
             return ResponseEntity.ok("Invitație trimisă!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
