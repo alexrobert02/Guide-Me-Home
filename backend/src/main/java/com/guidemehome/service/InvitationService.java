@@ -35,14 +35,22 @@ public class InvitationService {
 
     public void sendInvitationRequest(String senderId, String recipientEmail, String defaultBackendApiUrl) throws ExecutionException, InterruptedException {
         // Obține UUID-ul utilizatorului din Firebase Authentication
-        UserRecord userRecord;
+        UserRecord recipientRecord;
+        UserRecord senderRecord;
         try {
-            userRecord = firebaseAuth.getUserByEmail(recipientEmail);
+            recipientRecord = firebaseAuth.getUserByEmail(recipientEmail);
         } catch (FirebaseAuthException e) {
             throw new IllegalArgumentException("Utilizatorul cu acest email nu există în Firebase Authentication!");
         }
 
-        String recipientId = userRecord.getUid();
+        try {
+            senderRecord = firebaseAuth.getUser(senderId);
+        } catch (FirebaseAuthException e) {
+            throw new IllegalArgumentException("Utilizatorul cu acest id nu există în Firebase Authentication!");
+        }
+
+        String recipientId = recipientRecord.getUid();
+        String senderEmail = senderRecord.getEmail();
 
         // Verifică dacă utilizatorul există în colectia assistants
         DocumentReference assistantRef = firestore.collection("assistants").document(recipientId);
@@ -67,7 +75,8 @@ public class InvitationService {
 
         // Trimite e-mail destinatarului
         String tokenUrl = defaultBackendApiUrl+"/api/v1/invitation/accept?token=" + token;
-        emailService.sendInvitation(senderId, recipientEmail, tokenUrl);
+
+        emailService.sendInvitation(senderEmail, recipientEmail, tokenUrl);
     }
 
     public String acceptInvitationRequest(String token) throws ExecutionException, InterruptedException {
