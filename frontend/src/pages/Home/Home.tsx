@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { Menu, Button, Drawer } from "antd";
-import { HomeOutlined, SettingOutlined, InfoCircleOutlined, UpSquareOutlined } from "@ant-design/icons";
+import { HomeOutlined, SettingOutlined, InfoCircleOutlined, UpSquareOutlined, PoweroffOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 
@@ -54,6 +54,22 @@ const Home: React.FC = () => {
                     <Menu.Item key="about" icon={<InfoCircleOutlined />}>
                         About
                     </Menu.Item>
+                    <Menu.Item
+  key="logout"
+  icon={<PoweroffOutlined />}
+  onClick={async () => {
+    // Clear authentication details from local storage
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("role");
+    localStorage.removeItem("token");
+
+    // Navigate to login page
+    navigate("/login");
+    window.location.reload()
+  }}
+>
+  Logout
+</Menu.Item>
                 </Menu>
             </Drawer>
         </div>
