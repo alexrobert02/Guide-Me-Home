@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/route")
 public class SavedRoutesController {
@@ -25,13 +28,13 @@ public class SavedRoutesController {
     }
 
     @PublicEndpoint
-    @GetMapping("/retreiveRouteList")
-    public ResponseEntity<String> retrieveRouteList(@RequestParam String userId) {
+    @GetMapping("/retrieveRouteList")
+    public ResponseEntity<List<Map<String, Object>>> retrieveRouteList(@RequestParam String userId) {
         try {
-            savedRoutesService.retrieveRouteList(userId);
-            return ResponseEntity.ok("Rutele au fost returnate!");
+            List<Map<String, Object>> savedRoutes = savedRoutesService.retrieveRouteList(userId);
+            return ResponseEntity.ok(savedRoutes);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().build();
 
         }
     }
