@@ -15,17 +15,24 @@ public class SavedRoutesController {
 
     @PublicEndpoint
     @PostMapping
-    public ResponseEntity<String> sendInvitation(@RequestBody SavedRoutesDto savedRoutesDto) {
-    try {
-        savedRoutesService.saveRoute(savedRoutesDto.getUserId(), savedRoutesDto.getName(), savedRoutesDto.getWaypoints());
-        return ResponseEntity.ok("Ruta salvată!");
-    } catch (Exception e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<String> saveRoute(@RequestBody SavedRoutesDto savedRoutesDto) {
+        try {
+            savedRoutesService.saveRoute(savedRoutesDto.getUserId(), savedRoutesDto.getName(), savedRoutesDto.getWaypoints());
+            return ResponseEntity.ok("Ruta salvată!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
-//    @PublicEndpoint
-//    @PostMapping("/accept")
-//    public ResponseEntity<String> acceptInvitation(@RequestParam String token) {
-//
-//    }
-}}
+    @PublicEndpoint
+    @GetMapping("/retreiveRouteList")
+    public ResponseEntity<String> retrieveRouteList(@RequestParam String userId) {
+        try {
+            savedRoutesService.retrieveRouteList(userId);
+            return ResponseEntity.ok("Rutele au fost returnate!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+
+        }
+    }
+}
