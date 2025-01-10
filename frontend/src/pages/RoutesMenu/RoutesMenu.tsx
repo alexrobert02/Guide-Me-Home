@@ -11,7 +11,8 @@ import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 import {locator} from "../../AppInitializer";
 import {DEFAULT_BACKEND_API_URL} from "../../ProjectDefaults";
-import { getUserId } from "../../services/tokenDecoder"; // Import getUserId function
+import { getUserId } from "../../services/tokenDecoder";
+import {RoutesStore} from "../../stores/RoutesStore"; // Import getUserId function
 
 const { Content } = Layout;
 
@@ -25,10 +26,9 @@ export const RoutesMenu: React.FC = () => {
     const navigate = useNavigate();
     const mapStore = locator.get("MapStore") as MapStore;
     const routeService = locator.get("RouteService") as RouteService;
+    const routesStore = locator.get("RoutesStore") as RoutesStore;
 
     const [routes, setRoutes] = useState<Route[]>([]);
-    const [isEditable, setIsEditable] = useState(false);
-    const [selectedRoute, setSelectedRoute] = useState<Route | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -43,6 +43,7 @@ export const RoutesMenu: React.FC = () => {
                         userId, // Add userId as a query parameter
                     },
                 });
+                routesStore.setRoutes(response.data);
                 console.log("response", response);
                 setRoutes(response.data);
             } catch (error) {
@@ -56,8 +57,8 @@ export const RoutesMenu: React.FC = () => {
     }, []);
 
     const handleSelectRoute = async (route: Route) => {
-        setSelectedRoute(route);
-        setIsEditable(false);
+        routesStore.selectRoute(route);
+        routesStore.setEditable(false);
 
         const newModel = MapModelFactory.createFromWaypoints(route.waypoints);
         const result = await _getRouteResult(newModel.markers, routeService);
@@ -68,14 +69,19 @@ export const RoutesMenu: React.FC = () => {
     };
 
     const handleAddRoute = () => {
-        setSelectedRoute(null);
-        setIsEditable(true);
+
+        routesStore.unselectRoute()
+        routesStore.setEditable(true)
 
         const emptyModel = MapModelFactory.createEmpty();
         mapStore.setCurrentMapModel(emptyModel);
 
         navigate("/map");
     };
+
+    if (isLoading) {
+        return <Spin size="large" style={{ display: "block", margin: "20% auto" }} />;
+    }
 
     if (isLoading) {
         return <Spin size="large" style={{ display: "block", margin: "20% auto" }} />;
