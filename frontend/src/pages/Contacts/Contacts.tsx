@@ -1,30 +1,32 @@
 import * as React from "react";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { Input, Button, List, Typography } from "antd";
-import {getUserEmail, getUserId} from "../../services/tokenDecoder";
+import { getUserEmail, getUserId } from "../../services/tokenDecoder";
 import axios from "axios";
 import {DEFAULT_BACKEND_API_URL} from "../../ProjectDefaults";
 import { BackButton } from "../../components/BackButton";
 
 const Contacts: React.FC = () => {
-    const [isModified, setIsModified] = useState<boolean>(false);
-    const [email, setEmail] = useState("");
-    const [contacts, setContacts] = useState([]);
+  const [isModified, setIsModified] = useState<boolean>(false);
+  const [email, setEmail] = useState("");
+  const [contacts, setContacts] = useState([]);
 
-    const fetchData = () => {
-        const userId = getUserId();
-        if (userId) {
-            axios.get(`${DEFAULT_BACKEND_API_URL}/api/v1/user/getAllAssistants/${userId}`)
-                .then(response => {
-                    setContacts(response.data)
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    alert("Error getting assistants!")
-                });
-        }
-
+  const fetchData = () => {
+    const userId = getUserId();
+    if (userId) {
+      axios
+        .get(
+          `${DEFAULT_BACKEND_API_URL}/api/v1/user/getAllAssistants/${userId}`
+        )
+        .then((response) => {
+          setContacts(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+          alert("Error getting assistants!");
+        });
     }
+  };
 
     const handleSendEmail = async () => {
 
@@ -61,12 +63,31 @@ const Contacts: React.FC = () => {
                 alert("An error occurred. Please try again later.");
             }
         }
+      );
 
-    };
+      if (response.status === 200) {
+        console.log("Invitation sent successfully!");
+        alert("Invitation sent successfully!");
+      } else {
+        alert("Invalid email.");
+      }
+    } catch (error) {
+      console.error("Error sending invitation:", error);
+      if (error.response) {
+        alert(
+          `Invitation failed: ${
+            error.response.data.message || "Please try again."
+          }`
+        );
+      } else {
+        alert("An error occurred. Please try again later.");
+      }
+    }
+  };
 
-    useEffect(() => {
-        fetchData();
-    }, [isModified]);
+  useEffect(() => {
+    fetchData();
+  }, [isModified]);
 
     return (
         <div>

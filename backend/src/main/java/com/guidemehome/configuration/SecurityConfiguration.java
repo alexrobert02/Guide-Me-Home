@@ -64,24 +64,22 @@ public class SecurityConfiguration {
 					.anyRequest().authenticated();
 				})
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    }
 
-		return http.build();
-	}
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-	
-	private CorsConfigurationSource corsConfigurationSource() {
-		final var corsConfiguration = new CorsConfiguration();
-		corsConfiguration.setAllowedOrigins(List.of("*", "https://localhost", "http://localhost"));
-		corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-		corsConfiguration.setAllowedHeaders(List.of("Authorization", "Origin", "Content-Type", "Accept"));
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-		final var corsConfigurationSource = new UrlBasedCorsConfigurationSource();
-		corsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
-		return corsConfigurationSource;
-	}
+    private CorsConfigurationSource corsConfigurationSource() {
+        final var corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(List.of("*", "https://localhost", "http://localhost"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Origin", "Content-Type", "Accept"));
+
+        final var corsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        corsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        return corsConfigurationSource;
+    }
 
 }
