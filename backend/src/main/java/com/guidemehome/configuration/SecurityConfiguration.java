@@ -44,43 +44,44 @@ import lombok.SneakyThrows;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-	private final JwtAuthenticationFilter jwtAuthenticationFilter;
-	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-	private final ApiEndpointSecurityInspector apiEndpointSecurityInspector;
-	
-	@Bean
-	@SneakyThrows
-	public SecurityFilterChain configure(final HttpSecurity http)  {
-		http
-			.cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
-			.csrf(csrfConfigurer -> csrfConfigurer.disable())
-			.exceptionHandling(exceptionConfigurer -> exceptionConfigurer.authenticationEntryPoint(customAuthenticationEntryPoint))
-			.sessionManagement(sessionConfigurer -> sessionConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.authorizeHttpRequests(authManager -> {
-					authManager
-						.requestMatchers(HttpMethod.GET, apiEndpointSecurityInspector.getPublicGetEndpoints().toArray(String[]::new)).permitAll()
-						.requestMatchers(HttpMethod.POST, apiEndpointSecurityInspector.getPublicPostEndpoints().toArray(String[]::new)).permitAll()
-					.anyRequest().authenticated();
-				})
-			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final ApiEndpointSecurityInspector apiEndpointSecurityInspector;
 
-		return http.build();
-	}
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-	
-	private CorsConfigurationSource corsConfigurationSource() {
-		final var corsConfiguration = new CorsConfiguration();
-		corsConfiguration.setAllowedOrigins(List.of("*", "https://localhost", "http://localhost"));
-		corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-		corsConfiguration.setAllowedHeaders(List.of("Authorization", "Origin", "Content-Type", "Accept"));
+    @Bean
+    @SneakyThrows
+    public SecurityFilterChain configure(final HttpSecurity http) {
+        http
+                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
+                .csrf(csrfConfigurer -> csrfConfigurer.disable())
+                .exceptionHandling(exceptionConfigurer -> exceptionConfigurer.authenticationEntryPoint(customAuthenticationEntryPoint))
+                .sessionManagement(sessionConfigurer -> sessionConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authManager -> {
+                    authManager
+                            .requestMatchers(HttpMethod.GET, apiEndpointSecurityInspector.getPublicGetEndpoints().toArray(String[]::new)).permitAll()
+                            .requestMatchers(HttpMethod.POST, apiEndpointSecurityInspector.getPublicPostEndpoints().toArray(String[]::new)).permitAll()
 
-		final var corsConfigurationSource = new UrlBasedCorsConfigurationSource();
-		corsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
-		return corsConfigurationSource;
-	}
+                            .anyRequest().authenticated();
+                })
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    private CorsConfigurationSource corsConfigurationSource() {
+        final var corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(List.of("*", "https://localhost", "http://localhost"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Origin", "Content-Type", "Accept"));
+
+        final var corsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        corsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        return corsConfigurationSource;
+    }
 
 }
