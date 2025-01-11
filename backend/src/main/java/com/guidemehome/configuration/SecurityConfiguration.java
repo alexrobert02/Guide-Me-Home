@@ -64,7 +64,9 @@ public class SecurityConfiguration {
 					.anyRequest().authenticated();
 				})
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-    }
+
+		return http.build();
+	}
 
     @Bean
     public PasswordEncoder passwordEncoder() {

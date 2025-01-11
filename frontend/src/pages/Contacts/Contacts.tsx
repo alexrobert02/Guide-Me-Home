@@ -47,24 +47,6 @@ const Contacts: React.FC = () => {
                 }
             );
 
-            if (response.status === 200) {
-                console.log("Invitation sent successfully!")
-                alert("Invitation sent successfully!")
-            } else {
-                alert("Invalid email.");
-            }
-        } catch (error) {
-            console.error("Error sending invitation:", error);
-            if (error.response) {
-                alert(
-                    `Invitation failed: ${error.response.data.message || "Please try again."}`
-                );
-            } else {
-                alert("An error occurred. Please try again later.");
-            }
-        }
-      );
-
       if (response.status === 200) {
         console.log("Invitation sent successfully!");
         alert("Invitation sent successfully!");
