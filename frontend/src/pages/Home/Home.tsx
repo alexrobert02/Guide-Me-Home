@@ -50,7 +50,7 @@ const Home: React.FC = () => {
                         Emergency Contacts
                     </Menu.Item>
                     <Menu.Item key="about" icon={<UpSquareOutlined /> } onClick={(e) => navigate("/map")}>
-                        Map
+                        Free Roam
                     </Menu.Item>
                     <Menu.Item key="settings" icon={<SettingOutlined />}>
                         Settings

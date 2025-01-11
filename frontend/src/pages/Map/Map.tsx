@@ -66,6 +66,11 @@ const Map = observer(() => {
     mapStore.setCurrentlyEditing(true);
   };
 
+  const stopEdit = () => {
+    mapStore.setCurrentlyEditing(false);
+    routesStore.setEditable(false);
+  }
+
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
       {routesStore.editable && (
@@ -96,7 +101,13 @@ const Map = observer(() => {
           onChange={(e) => setRouteName(e.target.value)}
         />
       </Modal>
-      <BackButton />
+      <div
+        onClick={() => {
+          stopEdit();
+        }}
+      >
+        <BackButton />
+      </div>
       <MapWrapper />
     </div>
   );
