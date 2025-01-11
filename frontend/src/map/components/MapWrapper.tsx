@@ -4,23 +4,12 @@ import { observer } from "mobx-react"
 import { LocationStore } from '../../stores/LocationStore';
 import CurrentPositionMarker from './CurrentPositionMarker';
 import { locator } from '../../AppInitializer';
-import { MapControllerStore } from '../../stores/MapControllerStore';
 import { MapStore } from '../../stores/MapStore';
-import { RouteService } from '../../services/RouteService';
 import { RouteRanditon } from './RouteRandition';
 
-// import { LocationService } from '../services/LocationService';
-
-
 const MapWrapper = observer (() => {
-  
-  // get the markers from the LocationService
-  // const markers: Marker[];
   const locationStore = locator.get("LocationStore") as LocationStore;
-  const controller = (locator.get("MapControllerStore") as MapControllerStore).currentController;
   const mapStore = locator.get("MapStore") as MapStore;
-  const routeService = locator.get("RouteService") as RouteService;
-  const directionRenderer = routeService.directionRenderer;
 
   return (
       <Map
@@ -30,7 +19,7 @@ const MapWrapper = observer (() => {
         defaultZoom={10}
         gestureHandling={'greedy'}
         disableDefaultUI={true}
-        onClick={(e) => {console.log("map clicked", e); controller.onClick(e)}}
+        onClick={(e) => {console.log("map clicked", e); mapStore.onClick(e)}}
       >
         <CurrentPositionMarker />
         {
@@ -38,17 +27,17 @@ const MapWrapper = observer (() => {
             return (
               <AdvancedMarker
               position={marker.position}
+              draggable={mapStore.draggable}
+              onDrag={(e) => mapStore.onMarkerDrag(marker.id, e)}
+              onDragEnd={(e) => mapStore.onMarkerDragEnd(marker.id, e)}
+              
               >
 
               </AdvancedMarker>
             )
           })
         }
-        {
-          mapStore.routeResult && (
-            <RouteRanditon />
-          )
-        }
+          <RouteRanditon />
       </Map>
 )
 });

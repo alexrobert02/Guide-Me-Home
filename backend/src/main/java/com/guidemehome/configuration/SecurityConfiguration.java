@@ -44,29 +44,29 @@ import lombok.SneakyThrows;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-    private final ApiEndpointSecurityInspector apiEndpointSecurityInspector;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	private final ApiEndpointSecurityInspector apiEndpointSecurityInspector;
+	
+	@Bean
+	@SneakyThrows
+	public SecurityFilterChain configure(final HttpSecurity http)  {
+		http
+			.cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
+			.csrf(csrfConfigurer -> csrfConfigurer.disable())
+			.exceptionHandling(exceptionConfigurer -> exceptionConfigurer.authenticationEntryPoint(customAuthenticationEntryPoint))
+			.sessionManagement(sessionConfigurer -> sessionConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.authorizeHttpRequests(authManager -> {
+					authManager
+						.requestMatchers(HttpMethod.GET, apiEndpointSecurityInspector.getPublicGetEndpoints().toArray(String[]::new)).permitAll()
+						.requestMatchers(HttpMethod.POST, apiEndpointSecurityInspector.getPublicPostEndpoints().toArray(String[]::new)).permitAll()
+						.requestMatchers(HttpMethod.DELETE, apiEndpointSecurityInspector.getPublicDeleteEndpoints().toArray(String[]::new)).permitAll()
+					.anyRequest().authenticated();
+				})
+			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-    @Bean
-    @SneakyThrows
-    public SecurityFilterChain configure(final HttpSecurity http) {
-        http
-                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
-                .csrf(csrfConfigurer -> csrfConfigurer.disable())
-                .exceptionHandling(exceptionConfigurer -> exceptionConfigurer.authenticationEntryPoint(customAuthenticationEntryPoint))
-                .sessionManagement(sessionConfigurer -> sessionConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authManager -> {
-                    authManager
-                            .requestMatchers(HttpMethod.GET, apiEndpointSecurityInspector.getPublicGetEndpoints().toArray(String[]::new)).permitAll()
-                            .requestMatchers(HttpMethod.POST, apiEndpointSecurityInspector.getPublicPostEndpoints().toArray(String[]::new)).permitAll()
-
-                            .anyRequest().authenticated();
-                })
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
+		return http.build();
+	}
 
     @Bean
     public PasswordEncoder passwordEncoder() {

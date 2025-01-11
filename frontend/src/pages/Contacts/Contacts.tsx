@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { Input, Button, List, Typography } from "antd";
 import { getUserEmail, getUserId } from "../../services/tokenDecoder";
 import axios from "axios";
-import { DEFAULT_BACKEND_API_URL } from "../../ProjectDefaults";
+import {DEFAULT_BACKEND_API_URL} from "../../ProjectDefaults";
+import { BackButton } from "../../components/BackButton";
 
 const Contacts: React.FC = () => {
   const [isModified, setIsModified] = useState<boolean>(false);
@@ -27,24 +28,24 @@ const Contacts: React.FC = () => {
     }
   };
 
-  const handleSendEmail = async () => {
-    console.log("Email sent to:", email);
-    setEmail("");
+    const handleSendEmail = async () => {
 
-    try {
-      const response = await axios.post(
-        `${DEFAULT_BACKEND_API_URL}/api/v1/invitation`,
-        {
-          senderId: getUserId(),
-          recipientEmail: email,
-          defaultBackendApiUrl: DEFAULT_BACKEND_API_URL,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+        console.log("Email sent to:", email);
+        setEmail("");
+
+        try {
+            const response = await axios.post(
+                `${DEFAULT_BACKEND_API_URL}/api/v1/invitation`, {
+                    senderId: getUserId(),
+                    recipientEmail: email,
+                    defaultBackendApiUrl: DEFAULT_BACKEND_API_URL
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
       if (response.status === 200) {
         console.log("Invitation sent successfully!");
@@ -70,33 +71,35 @@ const Contacts: React.FC = () => {
     fetchData();
   }, [isModified]);
 
-  return (
-    <div style={{ padding: "16px" }}>
-      <div style={{ marginBottom: "16px" }}>
-        <Input
-          placeholder="Enter an assistant's email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ marginBottom: "8px" }}
-        />
-        <Button type="primary" onClick={handleSendEmail} block>
-          Send
-        </Button>
-      </div>
-      <List
-        header={
-          <Typography.Title level={4}>Emergency Contacts</Typography.Title>
-        }
-        bordered
-        dataSource={contacts}
-        renderItem={(item) => (
-          <List.Item>
-            <Typography.Text>{item}</Typography.Text>
-          </List.Item>
-        )}
-      />
-    </div>
-  );
+    return (
+        <div>
+            <BackButton />
+            <div style={{ padding: "16px" }}>
+                <div style={{ marginBottom: "16px" }}>
+                    <Input
+                        placeholder="Enter an assistant's email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        style={{ marginBottom: "8px" }}
+                    />
+                    <Button type="primary" onClick={handleSendEmail} block>
+                        Send
+                    </Button>
+                </div>
+                <List
+                    header={<Typography.Title level={4}>Emergency Contacts</Typography.Title>}
+                    bordered
+                    dataSource={contacts}
+                    renderItem={(item) => (
+                        <List.Item>
+                            <Typography.Text>{item}</Typography.Text>
+                        </List.Item>
+                    )}
+                />
+            </div>
+        </div>
+
+    );
 };
 
 export default Contacts;

@@ -1,67 +1,117 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
-import { LeftCircleOutlined } from "@ant-design/icons";
 import MapWrapper from "../../map/components/MapWrapper";
-import { MapControllerStore } from "../../stores/MapControllerStore";
 import { locator } from "../../AppInitializer";
-import { RouteCreationMapController } from "../../map/controllers/RouteCreationMapController";
 import { MapStore } from "../../stores/MapStore";
 import { observer } from "mobx-react";
-import { RouteService } from "../../services/RouteService";
+import { BackButton } from "../../components/BackButton";
+import { RoutesStore } from "../../stores/RoutesStore";
+import { RouteModelFactory } from "../../map/models/RouteModel";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { DEFAULT_BACKEND_API_URL } from "../../ProjectDefaults";
+import { Button, Modal, Input } from "antd";
+import { getUserId } from "../../services/tokenDecoder";
+import { useEffect } from "react";
 
 const Map = observer(() => {
-    const navigate = useNavigate();
-    const [isEditing, setIsEditing] = React.useState(false);
+  const mapStore = locator.get("MapStore") as MapStore;
+  const routesStore = locator.get("RoutesStore") as RoutesStore;
+  const navigate = useNavigate();
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [isModalVisible, setIsModalVisible] = React.useState(false);
+  const [routeName, setRouteName] = React.useState("");
 
-    const handleBackClick = () => {
-        navigate("/");
-    };
-
-    const mapControllerStore = locator.get("MapControllerStore") as MapControllerStore;
-    const mapStore = locator.get("MapStore") as MapStore;
-    const routeService = locator.get("RouteService") as RouteService;
-
-    const triggerMapEditMode = () => {
-        if (!isEditing) {
-            mapControllerStore.setCurrentController(new RouteCreationMapController(mapStore, routeService));
-        } else {
-            mapControllerStore.popController();
-        }
-        setIsEditing(!isEditing)
-    };
-
-    return (
-        <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-            <button 
-            onClick={triggerMapEditMode}
-            style={{
-                width: '100px',
-                height: '50px',
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                zIndex: 1000,
-            }}
-            >Edit</button>
-            {/* Back Button */}
-            <LeftCircleOutlined
-                onClick={handleBackClick}
-                style={{
-                    position: 'absolute',
-                    top: '10px',
-                    left: '10px',
-                    zIndex: 1000,
-                    padding: '10px 15px',
-                    backgroundColor: '#007BFF',
-                    color: '#FFF',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer'
-                }}
-            />
-            <MapWrapper />
-        </div>
+  const saveRoute = (name: string) => {
+    const route = RouteModelFactory.createFromMapModel(
+      mapStore.currentMapModel,
+      name
     );
+    mapStore.reset();
+    routesStore.addRoute(route);
+    const payload = {
+      userId: getUserId(),
+      name: route.name,
+      waypoints: route.waypoints,
+    };
+    console.log(payload);
+    axios
+      .post(`${DEFAULT_BACKEND_API_URL}/api/v1/route`, payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((r) => console.log(route));
+    navigate("/routes");
+  };
+
+  const handleSave = () => {
+    if (mapStore.currentlyEditing) {
+      setIsModalVisible(true);
+    } else {
+      startEdit();
+    }
+  };
+
+  const handleOk = () => {
+    saveRoute(routeName);
+    setIsModalVisible(false);
+    setRouteName("");
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setRouteName("");
+  };
+
+  const startEdit = () => {
+    mapStore.setCurrentlyEditing(true);
+  };
+
+  const stopEdit = () => {
+    mapStore.setCurrentlyEditing(false);
+    routesStore.setEditable(false);
+  }
+
+  return (
+    <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
+      {routesStore.editable && (
+        <Button
+          type="primary"
+          onClick={handleSave}
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            zIndex: 1000,
+          }}
+        >
+          {mapStore.currentlyEditing ? "Save" : "Edit"}
+        </Button>
+      )}
+      <Modal
+        title="Save Route"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Save"
+        cancelText="Cancel"
+      >
+        <Input
+          placeholder="Enter route name"
+          value={routeName}
+          onChange={(e) => setRouteName(e.target.value)}
+        />
+      </Modal>
+      <div
+        onClick={() => {
+          stopEdit();
+        }}
+      >
+        <BackButton />
+      </div>
+      <MapWrapper />
+    </div>
+  );
 });
 
 export default Map;

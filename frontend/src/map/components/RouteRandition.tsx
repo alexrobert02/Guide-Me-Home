@@ -11,8 +11,18 @@ export const RouteRanditon = observer (() => {
     const map = useMap();
     const directionRenderer = routeService.directionRenderer;
 
-    directionRenderer.setMap(map);
-    directionRenderer.setDirections(mapStore.routeResult);
+    directionRenderer.setOptions({
+        suppressMarkers: true,
+    });
+    
+    if (mapStore.routeResult === undefined) {
+        directionRenderer.setMap(null);
+    } else {
+        directionRenderer.setMap(map);
+        directionRenderer.setDirections(mapStore.routeResult);
+        
+    }
+   
 
     return (
         null

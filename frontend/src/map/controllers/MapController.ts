@@ -1,4 +1,5 @@
 import { MapMouseEvent } from "@vis.gl/react-google-maps";
+import { UUID } from "crypto";
 
 export class MapController {
 
@@ -6,7 +7,23 @@ export class MapController {
         return;
     }
 
-    onDoubleClick?(): void {
+    onDoubleClick(): void {
+        return;
+    }
+
+    draggable(): boolean {
+        return false;
+    }
+
+    onMarkerDrag(markerId: UUID, e: google.maps.MapMouseEvent): void {
+        return;
+    }
+
+    onMarkerDragEnd(markerId: UUID, e: google.maps.MapMouseEvent): void {
+        return;
+    }
+
+    onMarkerDoubleClick(markerId: UUID): void {
         return;
     }
 }
