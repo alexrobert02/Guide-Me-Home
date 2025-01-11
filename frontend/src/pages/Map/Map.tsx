@@ -11,6 +11,7 @@ import axios from "axios";
 import { DEFAULT_BACKEND_API_URL } from "../../ProjectDefaults";
 import { Button, Modal, Input } from "antd";
 import { getUserId } from "../../services/tokenDecoder";
+import { useEffect } from "react";
 
 const Map = observer(() => {
   const mapStore = locator.get("MapStore") as MapStore;

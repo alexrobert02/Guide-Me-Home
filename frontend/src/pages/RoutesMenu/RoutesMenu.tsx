@@ -13,6 +13,7 @@ import {locator} from "../../AppInitializer";
 import {DEFAULT_BACKEND_API_URL} from "../../ProjectDefaults";
 import { getUserId } from "../../services/tokenDecoder";
 import {RoutesStore} from "../../stores/RoutesStore"; // Import getUserId function
+import { NavigationContext } from "../../map/models/NavigationContext";
 
 const { Content } = Layout;
 
@@ -27,6 +28,7 @@ export const RoutesMenu: React.FC = () => {
     const mapStore = locator.get("MapStore") as MapStore;
     const routeService = locator.get("RouteService") as RouteService;
     const routesStore = locator.get("RoutesStore") as RoutesStore;
+    const navigationContext = locator.get("NavigationContext") as NavigationContext;
 
     const [routes, setRoutes] = useState<Route[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -65,6 +67,10 @@ export const RoutesMenu: React.FC = () => {
         newModel.routeResult = result;
 
         mapStore.setCurrentMapModel(newModel);
+        navigationContext.startNavigation(result, {
+            waypoints: route.waypoints,
+            name: route.name
+        });
         navigate("/map");
     };
 

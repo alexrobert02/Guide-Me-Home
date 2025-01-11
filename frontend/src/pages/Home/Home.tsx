@@ -3,8 +3,8 @@ import { useState } from "react";
 import {Menu, Button, Drawer, Typography, Layout} from "antd";
 import { HomeOutlined, SettingOutlined, InfoCircleOutlined, UpSquareOutlined, ExclamationCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { PanicButton } from "../../components/PanicButton";
-import { MenuButton } from "../../components/MenuButton";
+import { MapStore } from "../../stores/MapStore";
+import { locator } from "../../AppInitializer";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -13,6 +13,8 @@ const Home: React.FC = () => {
     const [visible, setVisible] = useState(false);
 
     const navigate = useNavigate();
+
+    const mapStore = locator.get("MapStore") as MapStore;
 
     const toggleDrawer = () => {
         setVisible(!visible);
@@ -49,7 +51,7 @@ const Home: React.FC = () => {
                     <Menu.Item key="contacts" icon={<HomeOutlined />} onClick={(e) => navigate("/contacts")}>
                         Emergency Contacts
                     </Menu.Item>
-                    <Menu.Item key="about" icon={<UpSquareOutlined /> } onClick={(e) => navigate("/map")}>
+                    <Menu.Item key="about" icon={<UpSquareOutlined /> } onClick={(e) => {mapStore.reset(); navigate("/map")}}>
                         Free Roam
                     </Menu.Item>
                     <Menu.Item key="settings" icon={<SettingOutlined />}>

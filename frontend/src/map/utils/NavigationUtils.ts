@@ -12,7 +12,7 @@ export class NavigationUtils {
         private readonly _mapStore: MapStore
     ) {}
 
-    public isCloseToRoute(): boolean {
+    public isCloseToRoute(epsilon = MAX_DISTANCE_FROM_ROUTE): boolean {
         const currentPoint: Point = {
             lat: this._locationStore.coordonates.latitude,
             lng: this._locationStore.coordonates.longitude

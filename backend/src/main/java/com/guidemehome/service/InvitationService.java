@@ -89,7 +89,7 @@ public class InvitationService {
             throw new IllegalArgumentException("Invitația nu este validă sau a expirat!");
         }
 
-        DocumentSnapshot requestDoc = querySnapshot.get().getDocuments().getFirst();
+        DocumentSnapshot requestDoc = querySnapshot.get().getDocuments().get(0);
 
         // Preia expiresAt ca Map și extrage valorile
         Map<String, Object> expiresAtMap = (Map<String, Object>) requestDoc.get("expiresAt");
