@@ -1,14 +1,20 @@
 import * as React from "react";
 import { useState } from "react";
-import { Menu, Button, Drawer } from "antd";
-import { HomeOutlined, SettingOutlined, InfoCircleOutlined, UpSquareOutlined, PoweroffOutlined } from "@ant-design/icons";
+import {Menu, Button, Drawer, Typography, Layout} from "antd";
+import { HomeOutlined, SettingOutlined, InfoCircleOutlined, UpSquareOutlined, ExclamationCircleOutlined, QuestionCircleOutlined, PoweroffOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { MapStore } from "../../stores/MapStore";
+import { locator } from "../../AppInitializer";
 
+const { Content } = Layout;
+const { Title } = Typography;
 
 const Home: React.FC = () => {
     const [visible, setVisible] = useState(false);
 
     const navigate = useNavigate();
+
+    const mapStore = locator.get("MapStore") as MapStore;
 
     const toggleDrawer = () => {
         setVisible(!visible);
@@ -45,13 +51,16 @@ const Home: React.FC = () => {
                     <Menu.Item key="contacts" icon={<HomeOutlined />} onClick={(e) => navigate("/contacts")}>
                         Emergency Contacts
                     </Menu.Item>
-                    <Menu.Item key="about" icon={<UpSquareOutlined /> } onClick={(e) => navigate("/map")}>
-                        Map
+                    <Menu.Item key="about" icon={<UpSquareOutlined /> } onClick={(e) => {mapStore.reset(); navigate("/map")}}>
+                        Free Roam
                     </Menu.Item>
                     <Menu.Item key="settings" icon={<SettingOutlined />}>
                         Settings
                     </Menu.Item>
-                    <Menu.Item key="about" icon={<InfoCircleOutlined />}>
+                    <Menu.Item key="panic" icon={<ExclamationCircleOutlined />}>
+                        Panic
+                    </Menu.Item>
+                    <Menu.Item key="about" icon={<QuestionCircleOutlined />}>
                         About
                     </Menu.Item>
                     <Menu.Item
@@ -72,6 +81,51 @@ const Home: React.FC = () => {
 </Menu.Item>
                 </Menu>
             </Drawer>
+            <Title level={2}>
+                GUIDE ME HOME
+            </Title>
+            <Layout style={{ maxWidth: 300, margin: "0 auto" }}>
+                <Content style={{ display: "flex", flexDirection: "column"}}>
+
+
+                    <Button
+                        type="primary"
+                        shape="circle"
+                        size="large"
+                        style={{
+                            height: "100px",
+                            backgroundColor: "red",
+                            borderColor: "red",
+                            color: "white",
+                            fontSize: "24px",
+                            fontWeight: "bold",
+                            marginTop: "60px",
+                            marginBottom: "20px"
+                        }}
+                        onClick={() => console.log("Panic Button pressed")}
+                    >
+                        PANIC
+                    </Button>
+
+                    <Button
+                        type="default"
+                        size="large"
+                        style={{ marginBottom: 16 }}
+                        onClick={() => navigate("/contacts")}
+                    >
+                        Contacts
+                    </Button>
+
+                    <Button
+                        type="default"
+                        size="large"
+                        style={{ marginBottom: 16 }}
+                        onClick={() => navigate("/routes")}
+                    >
+                        Routes
+                    </Button>
+                </Content>
+            </Layout>
         </div>
     );
 };
