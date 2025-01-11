@@ -72,6 +72,7 @@ public class SavedRoutesService {
                 // Adăugăm întreaga rută (toate câmpurile documentului) în lista de rute
                 Map<String, Object> routeData = document.getData();
                 if (routeData != null) {
+                    routeData.put("routeId", document.getId());
                     routes.add(routeData);
                 }
             }
@@ -80,6 +81,26 @@ public class SavedRoutesService {
         }
         
         return routes;
+    }
+
+    public void deleteRoute(String userId, String routeId) {
+        // Verificăm dacă utilizatorul există în Firebase Authentication
+        try {
+            firebaseAuth.getUser(userId);
+        } catch (FirebaseAuthException e) {
+            throw new IllegalArgumentException("Utilizatorul cu acest ID nu există în Firebase Authentication!");
+        }
+
+        // Referința subcolecției "routes" pentru userId
+        CollectionReference routesCollection = firestore.collection("savedRoutes").document(userId).collection("routes");
+
+        // Ștergem documentul cu ID-ul specificat
+        ApiFuture<WriteResult> writeResult = routesCollection.document(routeId).delete();
+        try {
+            System.out.println("Document deleted at: " + writeResult.get().getUpdateTime());
+        } catch (Exception e) {
+            throw new RuntimeException("Eroare la ștergerea rutei: " + e.getMessage(), e);
+        }
     }
 
 

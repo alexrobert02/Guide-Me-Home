@@ -38,4 +38,15 @@ public class SavedRoutesController {
 
         }
     }
+
+    @PublicEndpoint
+    @DeleteMapping("/deleteRoute")
+    public ResponseEntity<String> deleteRoute(@RequestParam String userId, @RequestParam String routeId) {
+        try {
+            savedRoutesService.deleteRoute(userId, routeId);
+            return ResponseEntity.ok("Ruta a fost ștearsă!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
