@@ -61,6 +61,7 @@ public class SecurityConfiguration {
 						.requestMatchers(HttpMethod.GET, apiEndpointSecurityInspector.getPublicGetEndpoints().toArray(String[]::new)).permitAll()
 						.requestMatchers(HttpMethod.POST, apiEndpointSecurityInspector.getPublicPostEndpoints().toArray(String[]::new)).permitAll()
 						.requestMatchers(HttpMethod.DELETE, apiEndpointSecurityInspector.getPublicDeleteEndpoints().toArray(String[]::new)).permitAll()
+						.requestMatchers(HttpMethod.PUT, apiEndpointSecurityInspector.getPublicPutEndpoints().toArray(String[]::new)).permitAll()
 					.anyRequest().authenticated();
 				})
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

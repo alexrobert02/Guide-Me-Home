@@ -2,6 +2,7 @@ package com.guidemehome.controller;
 
 import com.guidemehome.configuration.PublicEndpoint;
 import com.guidemehome.dto.SavedRoutesDto;
+import com.guidemehome.dto.UpdateRouteDto;
 import com.guidemehome.service.SavedRoutesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,18 @@ public class SavedRoutesController {
             return ResponseEntity.ok("Ruta salvată!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PublicEndpoint
+    @PutMapping
+    public ResponseEntity<Map<String, Object>> updateRoute(@RequestBody UpdateRouteDto updateRouteDto) {
+        try {
+            System.out.println("UpdateRouteDto: " + updateRouteDto);
+            Map<String, Object> savedRoute = savedRoutesService.updateRoute(updateRouteDto);
+            return ResponseEntity.ok(savedRoute);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
