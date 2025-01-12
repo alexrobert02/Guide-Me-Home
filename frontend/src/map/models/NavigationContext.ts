@@ -66,22 +66,17 @@ export class NavigationContext implements LocationObserver {
 
         switch(this._navigationState) {
             case NavigationState.LOST:
-                if (this._navigationUtils.isCloseToRoute(BACK_DISTANCE)) {
+                if (this._navigationUtils.isCloseToRoute(this._currentRouteResult, BACK_DISTANCE)) {
                     this._navigationState = NavigationState.ON_TRACK;
-                    this._redirectToRoute();
+                    this._backOnTrack();
                 }
                 break;
             case NavigationState.ON_TRACK:
-                if (!this._navigationUtils.isCloseToRoute(LOST_DISTANCE)) {
+                if (!this._navigationUtils.isCloseToRoute(this._currentRouteResult, LOST_DISTANCE)) {
                     this._navigationState = NavigationState.LOST;
+                    this._redirectToRoute();
                 }
                 break;
-        }
-
-        if (!this._navigationUtils.isCloseToRoute()) {
-            this._redirectToRoute();
-        } else {
-            this._backOnTrack();
         }
     }
 
@@ -92,10 +87,10 @@ export class NavigationContext implements LocationObserver {
             lng: this._currentLocation!.coords.longitude
         }
         const closestPoint = this._distanceUtils.closestPointOnPath(currentLocationPoint, this._distanceUtils.resultToPath(this._routeModel));
+        this._mapModel = this._mapStore.currentMapModel;
+
         this._routeService.getRoute(currentLocationPoint, closestPoint, []).then((result) => {
             this._routeResultOverride = result;
-            this._mapModel = this._mapStore.currentMapModel;
-            this._mapStore.reset();
             const newMapModel: MapModel = {
                 markers: [MarkerModelFactory.createFromPoint(currentLocationPoint), MarkerModelFactory.createFromPoint(closestPoint)],
                 showUserLocation: true,

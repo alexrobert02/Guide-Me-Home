@@ -1,5 +1,5 @@
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
-import { LocationService } from "./services/LocationService";
+import { LocationService, LocationServiceImpl } from "./services/LocationService";
 import { LocationStore } from "./stores/LocationStore";
 import { RouteService } from "./services/RouteService";
 import React from "react";
@@ -9,6 +9,7 @@ import { dummyRoutes } from "./dummyData";
 import { NavigationContext } from "./map/models/NavigationContext";
 import { DistanceUtils } from "./map/utils/DistanceUtils";
 import { NavigationUtils } from "./map/utils/NavigationUtils";
+import { LocationServiceMocked } from "./services/LocationServiceMocked";
 
 export var locator = new Map();
 
@@ -29,13 +30,14 @@ export function AppInitializer({ appInitializedCallback }: AppInitializerProps) 
     }
 
 
-    const locationService = new LocationService();
+    const locationService = new LocationServiceImpl();
+    // const locationService = new LocationServiceMocked();
     const locationStore = new LocationStore(locationService);
     const routesService = new RouteService(routesLibrary);
     const mapStore = new MapStore(routesService);
     const routesStore = new RoutesStore();
     const distanceUtils = new DistanceUtils();
-    const navigationUtils = new NavigationUtils(distanceUtils, locationStore, mapStore);
+    const navigationUtils = new NavigationUtils(distanceUtils, locationStore);
     const navigationContext = new NavigationContext(
         locationService,
         distanceUtils,
