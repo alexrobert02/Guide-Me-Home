@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import LoginForm from "./LoginForm";
 import axios from "axios";
 import { DEFAULT_BACKEND_API_URL } from "../../ProjectDefaults";
+import { requestPermissionForNotifications } from "../../firebase/firebase-config";
+import { getUserEmail, getUserId } from "../../services/tokenDecoder";
 
 const TRUE_STRING = "true";
 
@@ -29,6 +31,26 @@ function LoginHandler() {
         localStorage.setItem("role", data.role);
 
         localStorage.setItem("token", data.accessToken);
+
+        const fcmToken = await requestPermissionForNotifications();
+        localStorage.setItem("fcmToken", fcmToken);
+
+        console.log("FCM token:", fcmToken);
+        if (fcmToken) {
+          // Trimite token-ul de notificare la backend
+          await axios.post(
+            `${DEFAULT_BACKEND_API_URL}/api/v1/notifications/token`, 
+            { 
+              userId: getUserId(),
+              fcmToken 
+            },
+            {
+              headers: {
+                "Authorization": `Bearer ${data.accessToken}`,
+              },
+            }
+          );
+        }
 
         window.location.reload();
 
