@@ -18,6 +18,12 @@ export const getUserId = () => {
     }
 };
 
+export const getUserRole = () => {
+    const role = localStorage.getItem("role");
+    if (!role) return null;
+    return role;
+}
+
 export const getUserEmail = () => {
     const token = localStorage.getItem("token");
     if (!token) return null;
