@@ -12,6 +12,7 @@ import { DEFAULT_BACKEND_API_URL } from "../../ProjectDefaults";
 import { Button, Modal, Input } from "antd";
 import { getUserId } from "../../services/tokenDecoder";
 import { useEffect } from "react";
+import { Route } from "../RoutesMenu/RoutesMenu"
 
 const Map = observer(() => {
   const mapStore = locator.get("MapStore") as MapStore;
@@ -20,6 +21,33 @@ const Map = observer(() => {
   const [isEditing, setIsEditing] = React.useState(false);
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [routeName, setRouteName] = React.useState("");
+
+
+
+  const editRoute = () => {
+    // Destructure route details
+    const selectedRoute = routesStore.selectedRoute;
+    const route = RouteModelFactory.createFromMapModel(
+        mapStore.currentMapModel,
+        selectedRoute.name,
+        selectedRoute.routeId
+    );
+    const payload = {
+      userId: getUserId(),
+      routeId: route.routeId,
+      name: route.name,
+      waypoints: route.waypoints
+    }
+    axios
+        .put(`${DEFAULT_BACKEND_API_URL}/api/v1/route`, payload, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then((r) => console.log(route));
+    stopEdit();
+    navigate("/routes");
+  }
 
   const saveRoute = (name: string) => {
     const route = RouteModelFactory.createFromMapModel(
@@ -45,9 +73,16 @@ const Map = observer(() => {
   };
 
   const handleSave = () => {
-    if (mapStore.currentlyEditing) {
+    // if (routesStore.selectedRoute !== undefined) {
+    //   editRoute();
+    // }
+
+    if (mapStore.currentlyEditing && routesStore.selectedRoute === undefined) {
       setIsModalVisible(true);
-    } else {
+    }
+      else if (mapStore.currentlyEditing && routesStore.selectedRoute !== undefined) {
+        editRoute()
+      } else {
       startEdit();
     }
   };
