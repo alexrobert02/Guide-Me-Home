@@ -12,10 +12,14 @@ import { DEFAULT_BACKEND_API_URL } from "../../ProjectDefaults";
 import { Button, Modal, Input } from "antd";
 import { getUserId } from "../../services/tokenDecoder";
 import { useEffect } from "react";
+import { NavigationContext } from "../../map/utils/NavigationContext";
+import { TrackingContext } from "../../map/utils/TrackingContext";
 
 const Map = observer(() => {
   const mapStore = locator.get("MapStore") as MapStore;
   const routesStore = locator.get("RoutesStore") as RoutesStore;
+  const navigationContext = locator.get("NavigationContext") as NavigationContext;
+  const trackingContext = locator.get("TrackingContext") as TrackingContext;
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = React.useState(false);
   const [isModalVisible, setIsModalVisible] = React.useState(false);
@@ -105,6 +109,8 @@ const Map = observer(() => {
       <div
         onClick={() => {
           stopEdit();
+          navigationContext.stopNavigation();
+          trackingContext.stopTracking();
         }}
       >
         <BackButton />
