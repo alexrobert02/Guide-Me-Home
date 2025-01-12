@@ -22,8 +22,8 @@ function App() {
   const [appInitialized, setAppInitialized] = React.useState(false);
 
   useEffect(() => {
-    setupOnMessageListener();
-  }, []);
+  setupOnMessageListener();
+}, []);
 
   return (
     <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>

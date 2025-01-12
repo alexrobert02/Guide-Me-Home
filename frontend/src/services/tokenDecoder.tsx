@@ -18,6 +18,18 @@ export const getUserId = () => {
     }
 };
 
+export const getUserIdWithGivenToken = (token) => {
+    if (!token) return null;
+
+    try {
+        const decoded: DecodedToken = jwtDecode(token);
+        return decoded.user_id;
+    } catch (error) {
+        console.error("Token-ul nu a putut fi decodat.", error);
+        return null;
+    }
+};
+
 export const getUserEmail = () => {
     const token = localStorage.getItem("token");
     if (!token) return null;

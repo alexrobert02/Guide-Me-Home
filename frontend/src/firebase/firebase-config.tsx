@@ -2,13 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getMessaging, onMessage, getToken } from "firebase/messaging";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBKTV4Cu6nLHCi2sNaSfuhTcmrYgSxRODk",
-    authDomain: "guide-me-home.firebaseapp.com",
-    projectId: "guide-me-home",
-    storageBucket: "guide-me-home.firebasestorage.app",
-    messagingSenderId: "125620622392",
-    appId: "1:125620622392:web:760d551586a4b7676982cd",
-    measurementId: "G-BC84SSHE41"
+    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+    authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.REACT_APP_FIREBASE_APP_ID,
+    measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
   };
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -17,7 +17,7 @@ const messaging = getMessaging(firebaseApp);
 export const requestPermissionForNotifications = async () => {
     try {
       const token = await getToken(messaging, {
-        vapidKey: "BLBOYQ1kLPdJROLjCom4ib1UNA6pAETQ9vn2v1LWtAVNxYGONMP-3MFbj1iqWwEs4T7z6lCZorWn6pekGM7RoZI",
+        vapidKey: process.env.REACT_APP_FIREBASE_VAPID_KEY,
       });
       if (token) {
         console.log("Push notification token:", token);

@@ -5,6 +5,9 @@ import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.firebase.auth.UserRecord;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -107,6 +110,61 @@ public class UserService {
         }
 
         return assistantEmails;
+    }
+
+    public void saveFcmToken(String userId, String fcmToken) {
+        // Referințe către documentele din colecții
+        DocumentReference userRef = firestore.collection("users").document(userId);
+        DocumentReference assistantRef = firestore.collection("assistants").document(userId);
+
+        try {
+            // Verificăm dacă documentul există în colecția "users"
+            if (userRef.get().get().exists()) {
+                // Actualizăm documentul utilizatorului cu noul FCM token
+                userRef.update("fcmToken", fcmToken);
+                System.out.println("FCM token salvat pentru utilizator.");
+            }
+            // Verificăm dacă documentul există în colecția "assistants"
+            else if (assistantRef.get().get().exists()) {
+                // Actualizăm documentul asistentului cu noul FCM token
+                assistantRef.update("fcmToken", fcmToken);
+                System.out.println("FCM token salvat pentru asistent.");
+            }
+            // Dacă documentul nu există în nicio colecție
+            else {
+                throw new IllegalArgumentException("ID-ul furnizat nu aparține nici unui utilizator, nici unui asistent!");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Eroare la salvarea FCM token-ului: " + e.getMessage(), e);
+        }
+    }
+
+    public void sendPushNotification(String recipientId, String title, String body) {
+        try {
+            // Obține token-ul FCM al utilizatorului destinatar
+            DocumentReference recipientRef = firestore.collection("users").document(recipientId);
+            String fcmToken = recipientRef.get().get().getString("fcmToken");
+
+            if (fcmToken == null || fcmToken.isEmpty()) {
+                throw new IllegalArgumentException("FCM token not found for user " + recipientId);
+            }
+
+            Message message = Message.builder()
+                    .setToken(fcmToken)
+                    .setNotification(Notification.builder()
+                            .setTitle(title)
+                            .setBody(body)
+                            .build())
+                    .putData("url", "http://localhost:3000/contacts") // URL-ul pentru acțiunea de click
+                    .build();
+
+            // Trimite notificarea
+            String response = FirebaseMessaging.getInstance().send(message);
+            System.out.println("Notification sent successfully: " + response);
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send notification", e);
+        }
     }
 
 
