@@ -6,8 +6,8 @@ import { MapStore } from "../../stores/MapStore";
 import { MapModelFactory } from "../../map/models/MapModel";
 import { RouteService } from "../../services/RouteService";
 import { MarkerModel } from "../../map/models/MarkerModel";
-import { Button, Layout, Spin, Tooltip } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Button, Layout, Modal, Spin, Tooltip } from "antd";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 import {locator} from "../../AppInitializer";
 import {DEFAULT_BACKEND_API_URL} from "../../ProjectDefaults";
@@ -18,7 +18,7 @@ import { NavigationContext } from "../../map/models/NavigationContext";
 const { Content } = Layout;
 
 interface Route {
-    id: string;
+    routeId: string;
     name: string;
     waypoints: { lat: number; lng: number }[];
 }
@@ -32,31 +32,33 @@ export const RoutesMenu: React.FC = () => {
 
     const [routes, setRoutes] = useState<Route[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [routeToDelete, setRouteToDelete] = useState<Route | null>(null);
+
+    const fetchRoutes = async () => {
+        try {
+            const userId = getUserId();
+            const response = await axios.get(`${DEFAULT_BACKEND_API_URL}/api/v1/route/retrieveRouteList`, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                params: {
+                    userId,
+                },
+            });
+            routesStore.setRoutes(response.data);
+            console.log("routes: ", response.data)
+            setRoutes(response.data);
+        } catch (error) {
+            console.error("Failed to fetch routes", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchRoutes = async () => {
-            try {
-                const userId = getUserId();
-                const response = await axios.get(`${DEFAULT_BACKEND_API_URL}/api/v1/route/retrieveRouteList`, {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    params: {
-                        userId, // Add userId as a query parameter
-                    },
-                });
-                routesStore.setRoutes(response.data);
-                console.log("response", response);
-                setRoutes(response.data);
-            } catch (error) {
-                console.error("Failed to fetch routes", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         fetchRoutes();
-    }, []);
+    }, [routesStore]);
 
     const handleSelectRoute = async (route: Route) => {
         routesStore.selectRoute(route);
@@ -69,15 +71,14 @@ export const RoutesMenu: React.FC = () => {
         mapStore.setCurrentMapModel(newModel);
         navigationContext.startNavigation(result, {
             waypoints: route.waypoints,
-            name: route.name
+            name: route.name,
         });
         navigate("/map");
     };
 
     const handleAddRoute = () => {
-
-        routesStore.unselectRoute()
-        routesStore.setEditable(true)
+        routesStore.unselectRoute();
+        routesStore.setEditable(true);
 
         const emptyModel = MapModelFactory.createEmpty();
         mapStore.setCurrentMapModel(emptyModel);
@@ -85,9 +86,39 @@ export const RoutesMenu: React.FC = () => {
         navigate("/map");
     };
 
-    if (isLoading) {
-        return <Spin size="large" style={{ display: "block", margin: "20% auto" }} />;
-    }
+    const showDeleteModal = (route: Route) => {
+        setRouteToDelete(route);
+        setIsModalVisible(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!routeToDelete) return;
+
+        try {
+            console.log("route id:", routeToDelete.routeId)
+            await axios.delete(`${DEFAULT_BACKEND_API_URL}/api/v1/route/deleteRoute`, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                params: {
+                    userId: getUserId(),
+                    routeId: routeToDelete.routeId
+                },
+            });
+
+            await fetchRoutes();
+        } catch (error) {
+            console.error("Failed to delete route", error);
+        } finally {
+            setIsModalVisible(false);
+            setRouteToDelete(null);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setIsModalVisible(false);
+        setRouteToDelete(null);
+    };
 
     if (isLoading) {
         return <Spin size="large" style={{ display: "block", margin: "20% auto" }} />;
@@ -99,14 +130,31 @@ export const RoutesMenu: React.FC = () => {
             <Layout style={{ minWidth: 240, maxWidth: 300, margin: "0 auto" }}>
                 <Content style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                     {routes.map((route) => (
-                        <Button
-                            key={route.id}
-                            size="large"
-                            style={{ marginBottom: 16, width: "100%" }}
-                            onClick={() => handleSelectRoute(route)}
+                        <div
+                            key={route.routeId}
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                width: "100%",
+                                marginBottom: 16,
+                            }}
                         >
-                            {route.name}
-                        </Button>
+                            <Button
+                                size="large"
+                                style={{ flex: 1, marginRight: 8 }}
+                                onClick={() => handleSelectRoute(route)}
+                            >
+                                {route.name}
+                            </Button>
+                            <Tooltip title="Delete Route">
+                                <Button
+                                    danger
+                                    icon={<DeleteOutlined />}
+                                    onClick={() => showDeleteModal(route)}
+                                />
+                            </Tooltip>
+                        </div>
                     ))}
                     <Tooltip title="Add New Route">
                         <Button
@@ -118,6 +166,19 @@ export const RoutesMenu: React.FC = () => {
                     </Tooltip>
                 </Content>
             </Layout>
+
+            {/* Delete Confirmation Modal */}
+            <Modal
+                title="Confirm Delete"
+                visible={isModalVisible}
+                onOk={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+                okText="Delete"
+                cancelText="Cancel"
+                okButtonProps={{ danger: true }}
+            >
+                <p>Are you sure you want to delete the route <strong>{routeToDelete?.name}</strong>?</p>
+            </Modal>
         </div>
     );
 };
