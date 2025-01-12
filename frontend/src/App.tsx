@@ -12,47 +12,54 @@ import { AppInitializer } from "./AppInitializer";
 import Contacts from "./pages/Contacts/Contacts";
 import { RoutesMenu } from "./pages/RoutesMenu/RoutesMenu";
 
+
+import BatteryLowAlert from "./components/LowBattery"; 
+
 function App() {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-
   const [appInitialized, setAppInitialized] = React.useState(false);
 
   return (
     <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
-      { !appInitialized &&
-        <AppInitializer appInitializedCallback={() => setAppInitialized(true)} />}
-      {
-        appInitialized &&
-        <Routes>
-        <Route
-          path="/login"
-          element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
-        />
-        <Route
-          path="/register"
-          element={isAuthenticated ? <Navigate to="/" replace /> : <Register />}
-        />
+      {/* Initialize the app once */}
+      {!appInitialized && (
+        <AppInitializer appInitializedCallback={() => setAppInitialized(true)} />
+      )}
 
-        <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
-          <Route path="/" element={<Home />} />
-        </Route>
-        <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
-          <Route path="/map" element={<Map />} />
-        </Route>
-        <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
-            <Route path="/contacts" element={<Contacts />} />
-        </Route>
-        <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
-          <Route path="/routes" element={<RoutesMenu/>} />
-        </Route>
-        <Route path="/debug" element={<TestPage></TestPage>} />
+      {/* Once the app is initialized, render the rest */}
+      {appInitialized && (
+        <>
+          {/* Mount your BatteryLowAlert at the top level */}
+          <BatteryLowAlert />
 
-        <Route path="/debug" element={<TestPage></TestPage>} />
+          <Routes>
+            <Route
+              path="/login"
+              element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
+            />
+            <Route
+              path="/register"
+              element={isAuthenticated ? <Navigate to="/" replace /> : <Register />}
+            />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      }
-      
+            <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
+              <Route path="/" element={<Home />} />
+            </Route>
+            <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
+              <Route path="/map" element={<Map />} />
+            </Route>
+            <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
+              <Route path="/contacts" element={<Contacts />} />
+            </Route>
+            <Route element={<ProtectedRoute isAuth={isAuthenticated} />}>
+              <Route path="/routes" element={<RoutesMenu />} />
+            </Route>
+
+            <Route path="/debug" element={<TestPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </>
+      )}
     </APIProvider>
   );
 }
