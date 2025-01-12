@@ -2,13 +2,18 @@ import { Geolocation } from "@capacitor/geolocation";
 import { Motion } from "@capacitor/motion";
 import type { Position } from "@capacitor/geolocation";
 import { DEFAULT_BACKEND_API_URL } from "../ProjectDefaults";
-import { getUserEmail, getUserId } from "./tokenDecoder";
+import { getUserId } from "./tokenDecoder";
 
 export interface LocationObserver {
   onLocationChanged: (position: Position) => void;
 }
 
-export class LocationService {
+export interface LocationService{
+  registerObserver(observer: LocationObserver): void;
+  unregisterObserver(observer: LocationObserver): void;
+}
+
+export class LocationServiceImpl implements LocationService {
   private _observers: LocationObserver[] = [];
 
   constructor() {
@@ -26,7 +31,7 @@ export class LocationService {
     }
   }
 
-  async printCurrentPosition() {
+  private async _printCurrentPosition() {
     // request permission to access location
     const permission = await Geolocation.requestPermissions();
     console.log("Permission:", permission);
@@ -56,7 +61,7 @@ export class LocationService {
     return watchId;
   }
 
-  async startPrintingDirection() {
+  private async _startPrintingDirection() {
     console.log("Start printing direction");
 
     Motion.addListener("orientation", (event) => {
@@ -64,7 +69,7 @@ export class LocationService {
     });
   }
 
-  async stopPrintingDirection() {
+  private async _stopPrintingDirection() {
     Motion.removeAllListeners();
     console.log("Stop printing direction");
   }
