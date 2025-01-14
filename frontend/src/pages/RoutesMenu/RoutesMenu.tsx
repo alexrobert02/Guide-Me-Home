@@ -13,7 +13,7 @@ import {locator} from "../../AppInitializer";
 import {DEFAULT_BACKEND_API_URL} from "../../ProjectDefaults";
 import { getUserId } from "../../services/tokenDecoder";
 import {RoutesStore} from "../../stores/RoutesStore"; // Import getUserId function
-import { NavigationContext } from "../../map/models/NavigationContext";
+import { NavigationContext } from "../../map/utils/NavigationContext";
 
 const { Content } = Layout;
 

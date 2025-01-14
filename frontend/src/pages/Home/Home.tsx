@@ -8,6 +8,8 @@ import { locator } from "../../AppInitializer";
 import axios from "axios";
 import { DEFAULT_BACKEND_API_URL } from "../../ProjectDefaults";
 import { getUserId, getUserRole } from "../../services/tokenDecoder";
+import { RouteService } from "../../services/RouteService";
+import { TrackingContext } from "../../map/utils/TrackingContext";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -15,6 +17,9 @@ const { Title } = Typography;
 const Home: React.FC = () => {
     const [visible, setVisible] = useState(false);
     const [role, setRole] = useState<string | null>(null);
+    const routeService = locator.get("RouteService") as RouteService;
+    const locationStore = locator.get("LocationStore");
+    const trackingContext = locator.get("TrackingContext") as TrackingContext;
 
     const navigate = useNavigate();
     const mapStore = locator.get("MapStore") as MapStore;
@@ -32,9 +37,10 @@ const Home: React.FC = () => {
         setVisible(!visible);
     };
 
-    const likeTracking = () => {
+    const liveTracking = () => {
         console.log("live tracking started");
-        //navigate("/map");
+        trackingContext.startTracking();
+        navigate("/map");
     };
 
     const handleMenuClick = (key: string) => {
@@ -114,7 +120,7 @@ const Home: React.FC = () => {
                             marginBottom: "20px"
                         }}
                         onClick={async () => {
-                            if (role === "assistant") {likeTracking()} else {
+                            if (role === "assistant") {liveTracking()} else {
                                 const currentUserId = getUserId();
                                 const alertData = {
                                     senderId: currentUserId,
