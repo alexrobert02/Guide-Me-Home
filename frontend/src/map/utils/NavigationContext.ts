@@ -56,6 +56,9 @@ export class NavigationContext implements LocationObserver {
 
     public stopNavigation(): void {
         this._currentRouteResult = undefined;
+        if (this._mapModel) {
+            this._mapStore.setCurrentMapModel(this._mapModel)
+        }
         this._ongoingNavigation = false;
         this._navigationState = NavigationState.ON_TRACK;
         this._routeResultOverride = undefined;
