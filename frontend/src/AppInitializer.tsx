@@ -31,14 +31,13 @@ export function AppInitializer({ appInitializedCallback }: AppInitializerProps) 
         return (<div>Initializing the app</div>);
     }
 
-
-    const locationService = new LocationServiceImpl();
+    const distanceUtils = new DistanceUtils();
+    const locationService = new LocationServiceImpl(distanceUtils);
     // const locationService = new LocationServiceMocked();
     const locationStore = new LocationStore(locationService);
     const routeService = new RouteService(routesLibrary);
     const mapStore = new MapStore(routeService);
     const routesStore = new RoutesStore();
-    const distanceUtils = new DistanceUtils();
     const navigationUtils = new NavigationUtils(distanceUtils, locationStore);
     const navigationContext = new NavigationContext(
         locationService,
