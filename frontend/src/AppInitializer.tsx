@@ -56,9 +56,6 @@ export function AppInitializer({ appInitializedCallback }: AppInitializerProps) 
         mapStore,
         trackingService
     )
-
-    routesStore.setRoutes(dummyRoutes);
-
     
     locator.set("LocationService", locationService);
     locator.set("LocationStore", locationStore);

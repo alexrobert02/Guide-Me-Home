@@ -6,8 +6,8 @@ import { MapStore } from "../../stores/MapStore";
 import { MapModelFactory } from "../../map/models/MapModel";
 import { RouteService } from "../../services/RouteService";
 import { MarkerModel } from "../../map/models/MarkerModel";
-import { Button, Layout, Modal, Spin, Tooltip } from "antd";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import {Button, Input, Layout, Modal, Spin, Tooltip} from "antd";
+import { DeleteOutlined, PlusOutlined, EditOutlined } from "@ant-design/icons";
 import axios from "axios";
 import {locator} from "../../AppInitializer";
 import {DEFAULT_BACKEND_API_URL} from "../../ProjectDefaults";
@@ -17,7 +17,7 @@ import { NavigationContext } from "../../map/utils/NavigationContext";
 
 const { Content } = Layout;
 
-interface Route {
+export interface Route {
     routeId: string;
     name: string;
     waypoints: { lat: number; lng: number }[];
@@ -31,8 +31,11 @@ export const RoutesMenu: React.FC = () => {
     const navigationContext = locator.get("NavigationContext") as NavigationContext;
 
     const [routes, setRoutes] = useState<Route[]>([]);
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+    const [editedName, setEditedName] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [routeToEdit, setRouteToEdit] = useState<Route | null>();
     const [routeToDelete, setRouteToDelete] = useState<Route | null>(null);
 
     const fetchRoutes = async () => {
@@ -62,7 +65,7 @@ export const RoutesMenu: React.FC = () => {
 
     const handleSelectRoute = async (route: Route) => {
         routesStore.selectRoute(route);
-        routesStore.setEditable(false);
+        routesStore.setEditable(true);
 
         const newModel = MapModelFactory.createFromWaypoints(route.waypoints);
         const result = await _getRouteResult(newModel.markers, routeService);
@@ -70,6 +73,7 @@ export const RoutesMenu: React.FC = () => {
 
         mapStore.setCurrentMapModel(newModel);
         navigationContext.startNavigation(result, {
+            routeId: route.routeId,
             waypoints: route.waypoints,
             name: route.name,
         });
@@ -84,6 +88,40 @@ export const RoutesMenu: React.FC = () => {
         mapStore.setCurrentMapModel(emptyModel);
 
         navigate("/map");
+    };
+
+    const handleEditRouteName = (route) => {
+        setRouteToEdit(route)
+        setEditedName(route.name);
+        setIsEditModalVisible(true);
+    };
+
+    const handleSaveEdit = async () => {
+        if (routeToEdit && editedName && editedName !== routeToEdit.name) {
+            try {
+                console.log("userId: ",getUserId())
+                console.log("routeId: ", routeToEdit.routeId);
+                console.log("name", routeToEdit.name)
+                console.log("waypoints: ",routeToEdit.waypoints)
+                await axios.put(`${DEFAULT_BACKEND_API_URL}/api/v1/route`,
+                    {
+                        userId: getUserId(),
+                        routeId: routeToEdit.routeId,
+                        name: editedName,
+                        waypoints: routeToEdit.waypoints
+                    },
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+                    }
+                );
+                fetchRoutes(); // Refresh routes after update
+                setIsEditModalVisible(false); // Close modal
+            } catch (error) {
+                console.error("Failed to update route", error);
+            }
+        }
     };
 
     const showDeleteModal = (route: Route) => {
@@ -113,6 +151,11 @@ export const RoutesMenu: React.FC = () => {
             setIsModalVisible(false);
             setRouteToDelete(null);
         }
+    };
+
+    const handleCancelEdit = () => {
+        setIsEditModalVisible(false);
+        setRouteToEdit(null);
     };
 
     const handleCancelDelete = () => {
@@ -147,13 +190,16 @@ export const RoutesMenu: React.FC = () => {
                             >
                                 {route.name}
                             </Button>
-                            <Tooltip title="Delete Route">
-                                <Button
-                                    danger
-                                    icon={<DeleteOutlined />}
-                                    onClick={() => showDeleteModal(route)}
-                                />
-                            </Tooltip>
+                            <Button
+                                icon={<EditOutlined />}
+                                onClick={() => handleEditRouteName(route)}
+                                style={{ marginRight: 8 }}
+                            />
+                            <Button
+                                danger
+                                icon={<DeleteOutlined />}
+                                onClick={() => showDeleteModal(route)}
+                            />
                         </div>
                     ))}
                     <Tooltip title="Add New Route">
@@ -166,6 +212,22 @@ export const RoutesMenu: React.FC = () => {
                     </Tooltip>
                 </Content>
             </Layout>
+
+            {/* Edit Route Modal */}
+            <Modal
+                title="Edit Route Name"
+                visible={isEditModalVisible}
+                onOk={handleSaveEdit}
+                onCancel={handleCancelEdit}
+                okText="Save"
+                cancelText="Cancel"
+            >
+                <Input
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                    placeholder="Enter new route name"
+                />
+            </Modal>
 
             {/* Delete Confirmation Modal */}
             <Modal
