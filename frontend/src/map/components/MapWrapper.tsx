@@ -15,7 +15,7 @@ const MapWrapper = observer (() => {
       <Map
         mapId={process.env.REACT_APP_MAP_ID}
         style={{width: '100vw', height: '100vh'}}
-        defaultCenter={{lat: locationStore.coordonates.latitude, lng: locationStore.coordonates.latitude}}
+        defaultCenter={{lat: locationStore.coordonates.latitude, lng: locationStore.coordonates.longitude}}
         defaultZoom={10}
         gestureHandling={'greedy'}
         disableDefaultUI={true}
