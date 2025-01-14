@@ -3,6 +3,7 @@ import { Motion } from "@capacitor/motion";
 import type { Position } from "@capacitor/geolocation";
 import { DEFAULT_BACKEND_API_URL } from "../ProjectDefaults";
 import { getUserId } from "./tokenDecoder";
+import { DistanceUtils } from "../map/utils/DistanceUtils";
 
 export interface LocationObserver {
   onLocationChanged: (position: Position) => void;
@@ -15,8 +16,9 @@ export interface LocationService{
 
 export class LocationServiceImpl implements LocationService {
   private _observers: LocationObserver[] = [];
+  private _lastSentLocation?: Position;
 
-  constructor() {
+  constructor(private readonly _distanceUtils: DistanceUtils) {
     this._watchPosition();
   }
 
@@ -74,9 +76,33 @@ export class LocationServiceImpl implements LocationService {
     console.log("Stop printing direction");
   }
 
+
+  private isCloseToLastLocation(
+    currentLocation: Position
+  ): boolean {
+
+    if (!this._lastSentLocation) {
+      return false;
+    }
+    return this._distanceUtils.distanceTwoPoints(
+      {
+        lat: currentLocation.coords.latitude,
+        lng: currentLocation.coords.longitude,
+      },
+      {
+        lat: this._lastSentLocation.coords.latitude,
+        lng: this._lastSentLocation.coords.longitude,
+      }
+    ) < 50;
+  }
+
   private async _sendLocationToServer(position: Position) {
     try {
+      if (this.isCloseToLastLocation(position)) {
+        return;
+      }
       console.log("Sending location to server:", position); // Just for debugging, delete this line after finishing the implementation
+      this._lastSentLocation = position;
       const response = await fetch(
         `${DEFAULT_BACKEND_API_URL}/api/v1/current-location`,
         {
