@@ -9,5 +9,5 @@
       "useDefineForClassFields": true, // default when "target" is "ES2022" or higher
       "allowSyntheticDefaultImports": true
     },
-    "include": ["./src/**/*.ts", "./src/**/*.tsx"]
+    "include": ["./src/**/*.ts", "./src/**/*.tsx", "public/firebase-messaging-sw.js"]
   }

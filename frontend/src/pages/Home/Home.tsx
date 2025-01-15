@@ -10,6 +10,7 @@ import { DEFAULT_BACKEND_API_URL } from "../../ProjectDefaults";
 import { getUserId, getUserRole } from "../../services/tokenDecoder";
 import { RouteService } from "../../services/RouteService";
 import { TrackingContext } from "../../map/utils/TrackingContext";
+import { clearFcmToken } from "../../services/NotificationService";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -93,6 +94,7 @@ const Home: React.FC = () => {
                         onClick={async () => {
                             localStorage.removeItem("isAuthenticated");
                             localStorage.removeItem("role");
+                            clearFcmToken(localStorage.getItem("token"));
                             localStorage.removeItem("token");
                             navigate("/login");
                             window.location.reload();
@@ -129,7 +131,7 @@ const Home: React.FC = () => {
 
                                 try {
                                     const response = await axios.post(
-                                        `${DEFAULT_BACKEND_API_URL}/api/v1/alert/mail`,
+                                        `${DEFAULT_BACKEND_API_URL}/api/v1/alert`,
                                         alertData,
                                         {
                                             headers: {
