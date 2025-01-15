@@ -63,12 +63,10 @@ public class UserController {
 	}
 
 	@PublicEndpoint
-	@PostMapping("/send-notification")
-	public ResponseEntity<Void> sendNotification(
-			@RequestParam String recipientId,
-			@RequestParam String title,
-			@RequestParam String body) {
-		userService.sendPushNotification(recipientId, title, body);
+	@DeleteMapping(value="/fcmToken")
+	public ResponseEntity<Void> deleteFcmToken(
+			@RequestBody UserDto userDto) {
+		userService.deleteFcmToken(userDto.getUserId());
 		return ResponseEntity.ok().build();
 	}
 }
