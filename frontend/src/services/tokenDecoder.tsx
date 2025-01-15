@@ -29,6 +29,11 @@ export const getUserIdWithGivenToken = (token) => {
         return null;
     }
 };
+export const getUserRole = () => {
+    const role = localStorage.getItem("role");
+    if (!role) return null;
+    return role;
+}
 
 export const getUserEmail = () => {
     const token = localStorage.getItem("token");

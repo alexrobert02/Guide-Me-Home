@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import com.guidemehome.dto.SavedRoutesDto;
+import com.guidemehome.dto.UpdateRouteDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -103,5 +104,51 @@ public class SavedRoutesService {
         }
     }
 
+
+    public Map<String, Object> updateRoute(UpdateRouteDto updateRouteDto) {
+        String userId = updateRouteDto.getUserId();
+        String routeId = updateRouteDto.getRouteId();
+        String newName = updateRouteDto.getName();
+        List<UpdateRouteDto.Waypoint> newWaypoints = updateRouteDto.getWaypoints();
+
+        // Verify if the user exists in Firebase Authentication
+        try {
+            firebaseAuth.getUser(userId);
+        } catch (FirebaseAuthException e) {
+            throw new IllegalArgumentException("The user with this ID does not exist in Firebase Authentication!");
+        }
+
+        // Reference the specific route document
+        DocumentReference routeDocument = firestore.collection("savedRoutes")
+                .document(userId)
+                .collection("routes")
+                .document(routeId);
+
+        // Prepare the data to be updated
+        Map<String, Object> updatedData = new HashMap<>();
+        if (newName != null && !newName.isEmpty()) {
+            updatedData.put("name", newName);
+        }
+        if (newWaypoints != null && !newWaypoints.isEmpty()) {
+            updatedData.put("waypoints", newWaypoints);
+        }
+
+        if (updatedData.isEmpty()) {
+            throw new IllegalArgumentException("No valid fields provided for update.");
+        }
+
+        // Update the document in Firestore
+        ApiFuture<WriteResult> writeResult = routeDocument.update(updatedData);
+        try {
+            // Log the update timestamp
+            System.out.println("Document updated at: " + writeResult.get().getUpdateTime());
+
+            // Return the updated data as confirmation
+            updatedData.put("routeId", routeId);
+            return updatedData;
+        } catch (Exception e) {
+            throw new RuntimeException("Error updating the route: " + e.getMessage(), e);
+        }
+    }
 
 }

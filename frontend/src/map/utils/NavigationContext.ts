@@ -1,13 +1,13 @@
 import { Position } from "@capacitor/geolocation";
 import { LocationObserver, LocationService } from "../../services/LocationService";
-import { NavigationUtils } from "../utils/NavigationUtils";
+import { NavigationUtils } from "./NavigationUtils";
 import { RouteService } from "../../services/RouteService";
-import { DistanceUtils } from "../utils/DistanceUtils";
+import { DistanceUtils } from "./DistanceUtils";
 import { MapStore } from "../../stores/MapStore";
-import { MapModel } from "./MapModel";
-import { MarkerModelFactory } from "./MarkerModel";
+import { MapModel } from "../models/MapModel";
+import { MarkerModelFactory } from "../models/MarkerModel";
 import { MapController } from "../controllers/MapController";
-import { RouteModel } from "./RouteModel";
+import { RouteModel } from "../models/RouteModel";
 
 const LOST_DISTANCE = 200;
 const BACK_DISTANCE = 50;
@@ -56,7 +56,14 @@ export class NavigationContext implements LocationObserver {
 
     public stopNavigation(): void {
         this._currentRouteResult = undefined;
+        if (this._mapModel) {
+            this._mapStore.setCurrentMapModel(this._mapModel)
+        }
         this._ongoingNavigation = false;
+        this._navigationState = NavigationState.ON_TRACK;
+        this._routeResultOverride = undefined;
+        this._routeModel = undefined;
+        this._mapModel = undefined;
     }
 
     private _checkIfCloseToRoute(): void {

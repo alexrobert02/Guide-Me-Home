@@ -3,6 +3,7 @@ package com.guidemehome.utility;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.PUT;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +40,8 @@ public class ApiEndpointSecurityInspector {
 	private final List<String> publicPostEndpoints = new ArrayList<String>();
 	@Getter
 	private final List<String> publicDeleteEndpoints = new ArrayList<String>();
+	@Getter
+	private final List<String> publicPutEndpoints = new ArrayList<String>();
 
 	@PostConstruct
 	public void init() {
@@ -54,6 +57,8 @@ public class ApiEndpointSecurityInspector {
 					publicPostEndpoints.addAll(apiPaths);
 				} else if (httpMethod.equals(DELETE)) {
 					publicDeleteEndpoints.addAll(apiPaths);
+				} else if (httpMethod.equals(PUT)) {
+					publicPutEndpoints.addAll(apiPaths);
 				}
 			}
 		});
