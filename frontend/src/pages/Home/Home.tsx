@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { Menu, Button, Drawer, Typography, Layout } from "antd";
+import {Menu, Button, Drawer, Typography, Layout, Modal} from "antd";
 import { HomeOutlined, SettingOutlined, InfoCircleOutlined, UpSquareOutlined, ExclamationCircleOutlined, QuestionCircleOutlined, PoweroffOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { MapStore } from "../../stores/MapStore";
@@ -18,6 +18,7 @@ const { Title } = Typography;
 const Home: React.FC = () => {
     const [visible, setVisible] = useState(false);
     const [role, setRole] = useState<string | null>(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     const routeService = locator.get("RouteService") as RouteService;
     const locationStore = locator.get("LocationStore");
     const trackingContext = locator.get("TrackingContext") as TrackingContext;
@@ -49,6 +50,21 @@ const Home: React.FC = () => {
         setVisible(false);
     };
 
+    const showModal = () => {
+        if (role === "user")
+            setIsModalVisible(true);
+    };
+
+    const handleStay = () => {
+        console.log("User chose to stay.");
+        setIsModalVisible(false);
+    };
+
+    const handleGoToSafeArea = () => {
+        console.log("User chose to go to a safe area.");
+        setIsModalVisible(false);
+    }
+
     return (
         <div>
             <Button type="primary" onClick={toggleDrawer} style={{ position: "fixed", top: 10, left: 10 }}>
@@ -70,20 +86,16 @@ const Home: React.FC = () => {
                     <Menu.Item key="home" icon={<HomeOutlined />}>
                         Home
                     </Menu.Item>
-                    <Menu.Item key="contacts" icon={<HomeOutlined />} onClick={(e) => navigate("/contacts")}>
-                        Emergency Contacts
-                    </Menu.Item>
+                    {role === "user" && (
+                        <Menu.Item key="contacts" icon={<HomeOutlined />} onClick={(e) => navigate("/contacts")}>
+                            Emergency Contacts
+                        </Menu.Item>
+                    )}
                     <Menu.Item key="about" icon={<UpSquareOutlined />} onClick={(e) => { mapStore.reset(); navigate("/map") }}>
                         Free Roam
                     </Menu.Item>
                     <Menu.Item key="settings" icon={<SettingOutlined />}>
                         Settings
-                    </Menu.Item>
-                    <Menu.Item
-                        key="panic"
-                        icon={<ExclamationCircleOutlined />}
-                    >
-                        Panic
                     </Menu.Item>
                     <Menu.Item key="about" icon={<QuestionCircleOutlined />}>
                         About
@@ -150,12 +162,13 @@ const Home: React.FC = () => {
                                     alert("An error occurred while sending the alert. Please try again later.");
                                 }
                             }
+                            showModal()
                         }}
                     >
                         {role === "assistant" ? "Track" : "Panic"}
                     </Button>
 
-                    <Button
+                    {role === "user" && ( <Button
                         type="default"
                         size="large"
                         style={{ marginBottom: 16 }}
@@ -163,8 +176,9 @@ const Home: React.FC = () => {
                     >
                         Contacts
                     </Button>
+                    )}
 
-                    <Button
+                    {role === "user" && ( <Button
                         type="default"
                         size="large"
                         style={{ marginBottom: 16 }}
@@ -172,7 +186,21 @@ const Home: React.FC = () => {
                     >
                         Routes
                     </Button>
+                    )}
                 </Content>
+                <Modal
+                    title="Panic Options"
+                    visible={isModalVisible}
+                    onCancel={() => setIsModalVisible(false)}
+                    footer={null}
+                >
+                    <Button type="primary" onClick={handleStay} style={{ marginRight: 8 }}>
+                        Stay
+                    </Button>
+                    <Button type="default" onClick={handleGoToSafeArea}>
+                        Go to a Safe Area
+                    </Button>
+                </Modal>
             </Layout>
         </div>
     );
