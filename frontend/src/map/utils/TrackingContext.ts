@@ -11,12 +11,7 @@ import { RouteModel } from "../models/RouteModel";
 import { TrackingObserver, TrackingService } from "./TrackingService";
 
 const LOST_DISTANCE = 200;
-const BACK_DISTANCE = 50;
 
-enum NavigationState {
-    LOST,
-    ON_TRACK
-}
 
 export class TrackingContext implements TrackingObserver, LocationObserver {
     private _currentRouteResult?: google.maps.DirectionsResult;
@@ -61,7 +56,7 @@ export class TrackingContext implements TrackingObserver, LocationObserver {
                 this._currentRouteResult = result;
                 this._routeEndLocation = this._trueEndLocation;
                 this._mapStore.setCurrentMapModel({
-                    markers: [],
+                    markers: [this._trueStartLocation, this._trueEndLocation].map((point) => MarkerModelFactory.createFromPoint(point)),
                     showUserLocation: true,
                     routeResult: result,
                     controller: new MapController()
