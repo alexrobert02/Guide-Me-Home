@@ -12,6 +12,7 @@ import { NavigationUtils } from "./map/utils/NavigationUtils";
 import { LocationServiceMocked } from "./services/LocationServiceMocked";
 import { TrackingContext } from "./map/utils/TrackingContext";
 import { TrackingService } from "./map/utils/TrackingService";
+import { PlacesService } from "./services/PlacesService";
 
 export var locator = new Map();
 
@@ -25,9 +26,10 @@ export function AppInitializer({ appInitializedCallback }: AppInitializerProps) 
     // external services
     const routesLibrary = useMapsLibrary('routes');
     const drawingLibrary = useMapsLibrary('drawing');
+    const placeLibrary = useMapsLibrary('places');
 
     //if external services do not initialize, we cannot continue
-    if (!routesLibrary || !drawingLibrary) {
+    if (!routesLibrary || !drawingLibrary || !placeLibrary) {
         return (<div>Initializing the app</div>);
     }
 
@@ -36,6 +38,7 @@ export function AppInitializer({ appInitializedCallback }: AppInitializerProps) 
     // const locationService = new LocationServiceMocked();
     const locationStore = new LocationStore(locationService);
     const routeService = new RouteService(routesLibrary);
+    const placesService = new PlacesService(placeLibrary);
     const mapStore = new MapStore(routeService);
     const routesStore = new RoutesStore();
     const navigationUtils = new NavigationUtils(distanceUtils, locationStore);
@@ -66,6 +69,7 @@ export function AppInitializer({ appInitializedCallback }: AppInitializerProps) 
     locator.set("NavigationUtils", navigationUtils);
     locator.set("TrackingContext", trackingContext);
     locator.set("TrackingService", trackingService);
+    locator.set("PlacesService", placesService);
     
 
     appInitializedCallback();

@@ -7,6 +7,7 @@ import { DistanceUtils } from "../map/utils/DistanceUtils";
 
 export interface LocationObserver {
   onLocationChanged: (position: Position) => void;
+  onOrientationChanged?: (delta: number) => void;
 }
 
 export interface LocationService{
@@ -17,9 +18,11 @@ export interface LocationService{
 export class LocationServiceImpl implements LocationService {
   private _observers: LocationObserver[] = [];
   private _lastSentLocation?: Position;
+  private _lastOrientation = 0;
 
   constructor(private readonly _distanceUtils: DistanceUtils) {
     this._watchPosition();
+    this._watchOrientation();
   }
 
   registerObserver(observer: LocationObserver) {
@@ -59,6 +62,19 @@ export class LocationServiceImpl implements LocationService {
         await this._sendLocationToServer(position);
       }
     );
+
+    return watchId;
+  }
+
+  private async _watchOrientation() {
+
+    const watchId = Motion.addListener("orientation", (event) => {
+      const delta = (event.alpha - this._lastOrientation + 360) % 360;
+      this._lastOrientation = event.alpha;
+      for (const observer of this._observers) {
+        observer?.onOrientationChanged?.(delta);
+      }
+    });
 
     return watchId;
   }
