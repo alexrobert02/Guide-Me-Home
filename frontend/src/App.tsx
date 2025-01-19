@@ -11,11 +11,17 @@ import { APIProvider } from "@vis.gl/react-google-maps";
 import { AppInitializer } from "./AppInitializer";
 import Contacts from "./pages/Contacts/Contacts";
 import { RoutesMenu } from "./pages/RoutesMenu/RoutesMenu";
+import { useEffect } from 'react';
+import { setupNotificationListeners } from './services/NotificationService';
 
 function App() {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
 
   const [appInitialized, setAppInitialized] = React.useState(false);
+
+  useEffect(() => {
+    setupNotificationListeners();
+  }, []);
 
   return (
     <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>

@@ -1,10 +1,11 @@
 package com.guidemehome.service;
 
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.CollectionReference;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.*;
 import com.google.firebase.auth.UserRecord;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,6 @@ import com.guidemehome.dto.UserLoginRequestDto;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord.CreateRequest;
-import com.google.cloud.firestore.Firestore;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -107,6 +107,61 @@ public class UserService {
         }
 
         return assistantEmails;
+    }
+
+    public void saveFcmToken(String userId, String fcmToken) {
+        // Referințe către documentele din colecții
+        DocumentReference userRef = firestore.collection("users").document(userId);
+        DocumentReference assistantRef = firestore.collection("assistants").document(userId);
+
+        try {
+            // Verificăm dacă documentul există în colecția "users"
+            if (userRef.get().get().exists()) {
+                // Actualizăm documentul utilizatorului cu noul FCM token
+                userRef.update("fcmToken", fcmToken);
+                System.out.println("FCM token salvat pentru utilizator.");
+            }
+            // Verificăm dacă documentul există în colecția "assistants"
+            else if (assistantRef.get().get().exists()) {
+                // Actualizăm documentul asistentului cu noul FCM token
+                assistantRef.update("fcmToken", fcmToken);
+                System.out.println("FCM token salvat pentru asistent.");
+            }
+            // Dacă documentul nu există în nicio colecție
+            else {
+                throw new IllegalArgumentException("ID-ul furnizat nu aparține nici unui utilizator, nici unui asistent!");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Eroare la salvarea FCM token-ului: " + e.getMessage(), e);
+        }
+    }
+
+    public void deleteFcmToken(String userId) {
+        // Referințe către documentele din colecții
+        System.out.println("User ID: " + userId);
+        DocumentReference userRef = firestore.collection("users").document(userId);
+        DocumentReference assistantRef = firestore.collection("assistants").document(userId);
+
+        try {
+            // Verificăm dacă documentul există în colecția "users"
+            if (userRef.get().get().exists()) {
+                // Ștergem câmpul FCM token din documentul utilizatorului
+                userRef.update("fcmToken", FieldValue.delete());
+                System.out.println("FCM token șters pentru utilizator.");
+            }
+            // Verificăm dacă documentul există în colecția "assistants"
+            else if (assistantRef.get().get().exists()) {
+                // Ștergem câmpul FCM token din documentul asistentului
+                assistantRef.update("fcmToken", FieldValue.delete());
+                System.out.println("FCM token șters pentru asistent.");
+            }
+            // Dacă documentul nu există în nicio colecție
+            else {
+                throw new IllegalArgumentException("ID-ul furnizat nu aparține nici unui utilizator, nici unui asistent!");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Eroare la ștergerea FCM token-ului: " + e.getMessage(), e);
+        }
     }
 
 

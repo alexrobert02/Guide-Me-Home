@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "125620622392",
+    "project_id": "guide-me-home",
+    "storage_bucket": "guide-me-home.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125620622392:android:a0e7dec0e38036596982cd",
+        "android_client_info": {
+          "package_name": "com.example.guidemehome"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "125620622392-mgmftfce8nqd0eeopjiimt25v9n64354.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbvhKajITM5fJGeBKoPxjb2fY8EIK5Rn0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "125620622392-mgmftfce8nqd0eeopjiimt25v9n64354.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,16 +1,13 @@
 package com.guidemehome.controller;
 
 import com.google.firebase.auth.FirebaseAuthException;
+import com.guidemehome.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.guidemehome.configuration.PublicEndpoint;
-import com.guidemehome.dto.ExceptionResponseDto;
-import com.guidemehome.dto.TokenSuccessResponseDto;
-import com.guidemehome.dto.UserCreationRequestDto;
-import com.guidemehome.dto.UserLoginRequestDto;
 import com.guidemehome.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,4 +52,21 @@ public class UserController {
 		return ResponseEntity.ok(assistantEmails);
 	}
 
+	@PublicEndpoint
+	@PostMapping(value="/fcmToken")
+	public ResponseEntity<Void> saveFcmToken(
+			@RequestBody UpdateFcmTokenDto updateFcmTokenDto) {
+		System.out.println("User ID: " + updateFcmTokenDto.getUserId());
+		System.out.println("FCM Token: " + updateFcmTokenDto.getFcmToken());
+		userService.saveFcmToken(updateFcmTokenDto.getUserId(), updateFcmTokenDto.getFcmToken());
+		return ResponseEntity.ok().build();
+	}
+
+	@PublicEndpoint
+	@DeleteMapping(value="/fcmToken")
+	public ResponseEntity<Void> deleteFcmToken(
+			@RequestBody UserDto userDto) {
+		userService.deleteFcmToken(userDto.getUserId());
+		return ResponseEntity.ok().build();
+	}
 }
