@@ -11,6 +11,11 @@ import { getUserId, getUserRole } from "../../services/tokenDecoder";
 import { RouteService } from "../../services/RouteService";
 import { TrackingContext } from "../../map/utils/TrackingContext";
 import { clearFcmToken } from "../../services/NotificationService";
+import { PlaceResult, PlacesService } from "../../services/PlacesService";
+import { NavigationContext } from "../../map/utils/NavigationContext";
+import { RouteModel } from "../../map/models/RouteModel";
+import { LocationStore } from "../../stores/LocationStore";
+import { MapModelFactory } from "../../map/models/MapModel";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -19,9 +24,12 @@ const Home: React.FC = () => {
     const [visible, setVisible] = useState(false);
     const [role, setRole] = useState<string | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [places, setPlaces] = useState([]);
     const routeService = locator.get("RouteService") as RouteService;
-    const locationStore = locator.get("LocationStore");
+    const locationStore = locator.get("LocationStore") as LocationStore;
     const trackingContext = locator.get("TrackingContext") as TrackingContext;
+    const placesService = locator.get("PlacesService") as PlacesService;
+    const navigationContext = locator.get("NavigationContext") as NavigationContext;
 
     const navigate = useNavigate();
     const mapStore = locator.get("MapStore") as MapStore;
@@ -60,9 +68,40 @@ const Home: React.FC = () => {
         setIsModalVisible(false);
     };
 
-    const handleGoToSafeArea = () => {
+    const handleChoosePlace = () => {
         console.log("User chose to go to a safe area.");
-        setIsModalVisible(false);
+        const currentPosition = {
+            lat: locationStore.coordonates.latitude,
+            lng: locationStore.coordonates.longitude
+        }
+        placesService.getNearbyPlaces(currentPosition).then((places) => {
+            if (places.length === 0) {
+                alert("No safe areas found nearby.");
+                return;
+            }
+            setPlaces(places);
+        });
+        
+    }
+
+    const selectPlace = async (place: PlaceResult) => {
+        console.log("User chose to go to a safe area.");
+        const currentPosition = {
+            lat: locationStore.coordonates.latitude,
+            lng: locationStore.coordonates.longitude
+        }
+        mapStore.reset();
+        const placeRoute: RouteModel = {
+            routeId: "NO ID",
+            waypoints: [currentPosition, place.location],
+            name: ""
+        }
+        const mapModel = MapModelFactory.createFromWaypoints(placeRoute.waypoints);
+        mapStore.setCurrentMapModel(mapModel);
+        const routeResult = await routeService.getRoute(currentPosition, place.location, []);
+        mapStore.setRouteResult(routeResult);
+        navigationContext.startNavigation(routeResult, placeRoute);
+        navigate("/map");
     }
 
     return (
@@ -191,15 +230,47 @@ const Home: React.FC = () => {
                 <Modal
                     title="Panic Options"
                     visible={isModalVisible}
-                    onCancel={() => setIsModalVisible(false)}
+                    onCancel={() => {setIsModalVisible(false); setPlaces([]);}}
                     footer={null}
                 >
-                    <Button type="primary" onClick={handleStay} style={{ marginRight: 8 }}>
-                        Stay
-                    </Button>
-                    <Button type="default" onClick={handleGoToSafeArea}>
-                        Go to a Safe Area
-                    </Button>
+                    {
+                        places.length === 0 ? (
+                            <><Button type="primary" onClick={handleStay} style={{ marginRight: 8 }}>
+                                Stay
+                            </Button><Button type="default" onClick={handleChoosePlace}>
+                                    Go to a Safe Area
+                                </Button></>
+                        ) : (
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                rowGap: 8,
+                            }}
+                        >
+                            {
+                        places.map((place: PlaceResult) => {
+                            return (
+                                <Button 
+                                type="default"     
+                                onClick={() => {
+                                    selectPlace(place);
+                                    setIsModalVisible(false);
+                                }}>
+                                    {place.displayName}
+                                </Button>
+                            )
+                        })
+                    }
+                        </div>
+                    )
+                            
+                        
+
+                    }
+                    
                 </Modal>
             </Layout>
         </div>

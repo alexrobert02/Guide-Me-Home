@@ -28,6 +28,12 @@ export class LocationStore implements LocationObserver {
         this._updateLocation(position);
     }
 
+    onOrientationChanged(delta: number): void {
+        // delta actually is in the inverse direction
+        this._heading = ((this._heading || 0) - delta + 360) % 360;
+    }
+
+
     get coordonates(): Coordonates {
         if (!this._coordonates) {
             throw new Error('No coordonates available');
