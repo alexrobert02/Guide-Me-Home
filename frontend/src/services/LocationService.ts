@@ -1,9 +1,10 @@
 import { Geolocation } from "@capacitor/geolocation";
 import { Motion } from "@capacitor/motion";
 import type { Position } from "@capacitor/geolocation";
-import { DEFAULT_BACKEND_API_URL } from "../ProjectDefaults";
 import { getUserId } from "./tokenDecoder";
 import { DistanceUtils } from "../map/utils/DistanceUtils";
+
+const REACT_APP_BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 export interface LocationObserver {
   onLocationChanged: (position: Position) => void;
@@ -120,7 +121,7 @@ export class LocationServiceImpl implements LocationService {
       console.log("Sending location to server:", position); // Just for debugging, delete this line after finishing the implementation
       this._lastSentLocation = position;
       const response = await fetch(
-        `${DEFAULT_BACKEND_API_URL}/api/v1/current-location`,
+        `${REACT_APP_BACKEND_API_URL}/api/v1/current-location`,
         {
           method: "POST",
           headers: {

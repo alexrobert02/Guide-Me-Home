@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { Input, Button, List, Typography } from "antd";
 import { getUserEmail, getUserId } from "../../services/tokenDecoder";
 import axios from "axios";
-import {DEFAULT_BACKEND_API_URL} from "../../ProjectDefaults";
 import { BackButton } from "../../components/BackButton";
+
+const REACT_APP_BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 const Contacts: React.FC = () => {
   const [isModified, setIsModified] = useState<boolean>(false);
@@ -16,7 +17,7 @@ const Contacts: React.FC = () => {
     if (userId) {
       axios
         .get(
-          `${DEFAULT_BACKEND_API_URL}/api/v1/user/getAllAssistants/${userId}`
+          `${REACT_APP_BACKEND_API_URL}/api/v1/user/getAllAssistants/${userId}`
         )
         .then((response) => {
           setContacts(response.data);
@@ -35,10 +36,10 @@ const Contacts: React.FC = () => {
 
         try {
             const response = await axios.post(
-                `${DEFAULT_BACKEND_API_URL}/api/v1/invitation`, {
+                `${REACT_APP_BACKEND_API_URL}/api/v1/invitation`, {
                     senderId: getUserId(),
                     recipientEmail: email,
-                    defaultBackendApiUrl: DEFAULT_BACKEND_API_URL
+                    defaultBackendApiUrl: REACT_APP_BACKEND_API_URL
                 },
                 {
                     headers: {

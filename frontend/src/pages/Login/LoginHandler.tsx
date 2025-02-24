@@ -2,9 +2,9 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import LoginForm from "./LoginForm";
 import axios from "axios";
-import { DEFAULT_BACKEND_API_URL } from "../../ProjectDefaults";
 import { initializePushNotifications, sendFcmTokenToServer } from '../../services/NotificationService';
 
+const REACT_APP_BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 const TRUE_STRING = "true";
 
@@ -15,7 +15,7 @@ function LoginHandler() {
   const handleLogin = async (credentials) => {
     try {
       const response = await axios.post(
-        `${DEFAULT_BACKEND_API_URL}/api/v1/user/login`,
+        `${REACT_APP_BACKEND_API_URL}/api/v1/user/login`,
         credentials,
         {
           headers: {

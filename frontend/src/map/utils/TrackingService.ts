@@ -1,7 +1,8 @@
 import axios from "axios";
-import { DEFAULT_BACKEND_API_URL } from "../../ProjectDefaults";
 import { getUserId } from "../../services/tokenDecoder";
 import { DistanceUtils } from "./DistanceUtils";
+
+const REACT_APP_BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 export interface TrackingObserver {
     onTrackedLocationChanged: (position: google.maps.LatLngLiteral) => void;
@@ -25,7 +26,7 @@ export class TrackingService {
     }
 
     private async _getTrackedLocation(): Promise<google.maps.LatLngLiteral> {
-        const API_PATH = `${DEFAULT_BACKEND_API_URL}/api/v1/live-tracking/${getUserId()}`;
+        const API_PATH = `${REACT_APP_BACKEND_API_URL}/api/v1/live-tracking/${getUserId()}`;
         const response = await axios.get(API_PATH)
 
         if (response.status === 200) {

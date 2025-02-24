@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { MapStore } from "../../stores/MapStore";
 import { locator } from "../../AppInitializer";
 import axios from "axios";
-import { DEFAULT_BACKEND_API_URL } from "../../ProjectDefaults";
 import { getUserId, getUserRole } from "../../services/tokenDecoder";
 import { RouteService } from "../../services/RouteService";
 import { TrackingContext } from "../../map/utils/TrackingContext";
@@ -19,6 +18,8 @@ import { MapModelFactory } from "../../map/models/MapModel";
 
 const { Content } = Layout;
 const { Title } = Typography;
+
+const REACT_APP_BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 const Home: React.FC = () => {
     const [visible, setVisible] = useState(false);
@@ -182,7 +183,7 @@ const Home: React.FC = () => {
 
                                 try {
                                     const response = await axios.post(
-                                        `${DEFAULT_BACKEND_API_URL}/api/v1/alert`,
+                                        `${REACT_APP_BACKEND_API_URL}/api/v1/alert`,
                                         alertData,
                                         {
                                             headers: {

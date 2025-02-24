@@ -1,0 +1,18 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: guidemehome
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+
+com:
+  guidemehome:
+    firebase:
+      serviceAccountFilePath: serviceAccount.json
+    open-api:
+      enabled: true
+      api-version: 1.0.0
+      title: Guide-Me-Home
+      description: Backend application for Guide-Me-Home

@@ -8,11 +8,12 @@ import { RoutesStore } from "../../stores/RoutesStore";
 import { RouteModelFactory } from "../../map/models/RouteModel";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { DEFAULT_BACKEND_API_URL } from "../../ProjectDefaults";
 import { Button, Modal, Input } from "antd";
 import { getUserId } from "../../services/tokenDecoder";
 import { NavigationContext } from "../../map/utils/NavigationContext";
 import { TrackingContext } from "../../map/utils/TrackingContext";
+
+const REACT_APP_BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 const Map = observer(() => {
   const mapStore = locator.get("MapStore") as MapStore;
@@ -40,7 +41,7 @@ const Map = observer(() => {
       waypoints: route.waypoints
     }
     axios
-        .put(`${DEFAULT_BACKEND_API_URL}/api/v1/route`, payload, {
+        .put(`${REACT_APP_BACKEND_API_URL}/api/v1/route`, payload, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -64,7 +65,7 @@ const Map = observer(() => {
     };
     console.log(payload);
     axios
-      .post(`${DEFAULT_BACKEND_API_URL}/api/v1/route`, payload, {
+      .post(`${REACT_APP_BACKEND_API_URL}/api/v1/route`, payload, {
         headers: {
           "Content-Type": "application/json",
         },

@@ -10,12 +10,13 @@ import {Button, Input, Layout, Modal, Spin, Tooltip} from "antd";
 import { DeleteOutlined, PlusOutlined, EditOutlined } from "@ant-design/icons";
 import axios from "axios";
 import {locator} from "../../AppInitializer";
-import {DEFAULT_BACKEND_API_URL} from "../../ProjectDefaults";
 import { getUserId } from "../../services/tokenDecoder";
 import {RoutesStore} from "../../stores/RoutesStore"; // Import getUserId function
 import { NavigationContext } from "../../map/utils/NavigationContext";
 
 const { Content } = Layout;
+
+const REACT_APP_BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 export interface Route {
     routeId: string;
@@ -41,7 +42,7 @@ export const RoutesMenu: React.FC = () => {
     const fetchRoutes = async () => {
         try {
             const userId = getUserId();
-            const response = await axios.get(`${DEFAULT_BACKEND_API_URL}/api/v1/route/retrieveRouteList`, {
+            const response = await axios.get(`${REACT_APP_BACKEND_API_URL}/api/v1/route/retrieveRouteList`, {
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -103,7 +104,7 @@ export const RoutesMenu: React.FC = () => {
                 console.log("routeId: ", routeToEdit.routeId);
                 console.log("name", routeToEdit.name)
                 console.log("waypoints: ",routeToEdit.waypoints)
-                await axios.put(`${DEFAULT_BACKEND_API_URL}/api/v1/route`,
+                await axios.put(`${REACT_APP_BACKEND_API_URL}/api/v1/route`,
                     {
                         userId: getUserId(),
                         routeId: routeToEdit.routeId,
@@ -134,7 +135,7 @@ export const RoutesMenu: React.FC = () => {
 
         try {
             console.log("route id:", routeToDelete.routeId)
-            await axios.delete(`${DEFAULT_BACKEND_API_URL}/api/v1/route/deleteRoute`, {
+            await axios.delete(`${REACT_APP_BACKEND_API_URL}/api/v1/route/deleteRoute`, {
                 headers: {
                     "Content-Type": "application/json",
                 },

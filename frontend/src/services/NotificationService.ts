@@ -1,8 +1,9 @@
 import { PushNotifications } from '@capacitor/push-notifications';
 import { Capacitor } from '@capacitor/core';
 import axios from 'axios';
-import { DEFAULT_BACKEND_API_URL } from '../ProjectDefaults';
 import { getUserIdWithGivenToken } from './tokenDecoder';
+
+const REACT_APP_BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 // Functie pentru inițializarea notificărilor push
 export const initializePushNotifications = async () => {
@@ -48,7 +49,7 @@ export const sendFcmTokenToServer = async (accessToken: string, fcmToken: string
     const userId = getUserIdWithGivenToken(accessToken);
 
     await axios.post(
-      `${DEFAULT_BACKEND_API_URL}/api/v1/user/fcmToken`,
+      `${REACT_APP_BACKEND_API_URL}/api/v1/user/fcmToken`,
       {
         userId,
         fcmToken,
@@ -70,7 +71,7 @@ export const clearFcmToken = async (accessToken: string) => {
     try {
       const userId = getUserIdWithGivenToken(accessToken);
   
-      await axios.delete(`${DEFAULT_BACKEND_API_URL}/api/v1/user/fcmToken`, {
+      await axios.delete(`${REACT_APP_BACKEND_API_URL}/api/v1/user/fcmToken`, {
         data: { userId },
         headers: {
           'Content-Type': 'application/json',

@@ -2,7 +2,8 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import RegisterForm from "./RegisterForm";
 import axios from "axios";
-import { DEFAULT_BACKEND_API_URL } from "../../ProjectDefaults";
+
+const REACT_APP_BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL;
 
 function RegisterHandler() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ function RegisterHandler() {
     console.log(credentials);
     try {
       const response = await axios.post(
-        `${DEFAULT_BACKEND_API_URL}/api/v1/user`,
+        `${REACT_APP_BACKEND_API_URL}/api/v1/user`,
         credentials,
         {
           headers: {
